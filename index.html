@@ -20,6 +20,7 @@
     <aside id="side"></aside>
     <main id="content">
       <div class="col">
+        <div class="metabar"><span>Est. <span id="est"></span></span><span id="clock" aria-hidden="true"></span></div>
         <div class="hero">
           <div class="status">Building in the open</div>
           <h1>Building in the open.<br>Deciding in public, <em>through focus, constraints, and execution.</em></h1>
@@ -28,6 +29,7 @@
             <a class="btn primary" href="archive/">Read my latest archive →</a>
             <a class="btn ghost" href="story/">Read my story</a>
           </div>
+          <p class="hint" id="copy-email" hidden>Press <kbd>C</kbd> <span data-msg>to copy my email</span></p>
         </div>
 
         <section aria-labelledby="h-read">
@@ -54,21 +56,29 @@
           </article>
         </section>
 
+        <section aria-labelledby="h-start">
+          <div class="sec-head"><h2 id="h-start">Start here</h2></div>
+          <ul class="rows" id="featured"></ul>
+        </section>
+
         <section aria-labelledby="h-latest">
-          <div class="sec-head"><h2 id="h-latest">Latest from the archive</h2></div>
+          <div class="sec-head"><h2 id="h-latest">Newest</h2></div>
           <div class="demo"><b>DEMO</b><span>These entries are placeholders. Replace them in assets/data.js.</span></div>
           <ul class="rows" id="latest"></ul>
-          <p style="margin:16px 0 0"><a class="back" style="margin:0" href="archive/">See everything →</a></p>
+          <div class="more"><a href="archive/">…and more in the archive</a><button type="button" data-random>Random entry</button></div>
         </section>
       </div>
-      <footer class="foot"><span>© <span id="year"></span> Akshay</span><button id="top" type="button">Scroll to top ↑</button></footer>
+      <footer class="foot"><span>© <span id="year"></span> Akshay · <span class="updated">Last updated <span id="upd"></span></span></span><button id="top" type="button">Scroll to top ↑</button></footer>
     </main>
   </div>
   <script src="assets/data.js"></script>
   <script src="assets/site.js"></script>
   <script>
-    document.getElementById("latest").innerHTML = ARCHIVE.slice().sort(function (a, b) { return b.date.localeCompare(a.date); })
-      .slice(0, 4).map(rowHTML).join("");
+    var byDate = function (a, b) { return b.date.localeCompare(a.date); };
+    document.getElementById("est").textContent = SITE.since;
+    document.getElementById("upd").textContent = fmtDate(SITE.updated);
+    document.getElementById("featured").innerHTML = ARCHIVE.filter(function (e) { return e.featured; }).sort(byDate).map(rowHTML).join("");
+    document.getElementById("latest").innerHTML = ARCHIVE.slice().sort(byDate).slice(0, 5).map(rowHTML).join("");
   </script>
 </body>
 </html>

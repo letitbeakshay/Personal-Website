@@ -18,6 +18,7 @@
     <main id="content">
       <div class="col entry">
         <div class="hero" id="entry"></div>
+        <div class="more" id="tools" hidden><button type="button" id="copylink">Copy link</button><button type="button" data-random>Random entry</button></div>
         <a class="back" href="./">← Back to the archive</a>
       </div>
       <footer class="foot"><span>© <span id="year"></span> Akshay</span><button id="top" type="button">Scroll to top ↑</button></footer>
@@ -37,6 +38,10 @@
       out.innerHTML = '<p class="eyebrow">' + esc(KINDS[e.kind] || e.kind) + "</p><h1>" + esc(e.title) + "</h1>" +
         '<div class="meta"><time datetime="' + esc(e.date) + '">' + fmtDate(e.date) + "</time><span>·</span><span>" + e.read + ' min read</span></div>' +
         '<div class="entry-body">' + e.body.map(function (p) { return "<p>" + esc(p) + "</p>"; }).join("") + "</div>";
+      document.getElementById("tools").hidden = false;
+      document.getElementById("copylink").addEventListener("click", function () {
+        var b = this; navigator.clipboard.writeText(location.href).then(function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy link"; }, 1500); });
+      });
     }
   </script>
 </body>

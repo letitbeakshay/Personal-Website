@@ -68,4 +68,37 @@
       "<div><h3>" + esc(e.title) + "</h3><p>" + esc(e.summary) + "</p></div>" +
       '<span class="kind">' + esc(KINDS[e.kind] || e.kind) + "</span></a></li>";
   };
+
+  // Random entry
+  window.randomEntryURL = function () {
+    var a = window.ARCHIVE || []; if (!a.length) return base + "archive/";
+    return base + "archive/entry.html?id=" + encodeURIComponent(a[Math.floor(Math.random() * a.length)].id);
+  };
+  document.querySelectorAll("[data-random]").forEach(function (el) {
+    el.addEventListener("click", function (e) { e.preventDefault(); location.href = randomEntryURL(); });
+  });
+
+  // Live clock in the header line
+  var clock = document.getElementById("clock");
+  if (clock && window.SITE) {
+    var tick = function () {
+      try {
+        clock.textContent = new Date().toLocaleTimeString("en-GB", { timeZone: SITE.tz, hour12: false }) + " " + SITE.tzLabel;
+      } catch (e) { clock.textContent = ""; }
+    };
+    tick(); setInterval(tick, 1000);
+  }
+
+  // Press C to copy email (only when an email is configured)
+  var hint = document.getElementById("copy-email");
+  if (hint && window.SITE && SITE.email) {
+    hint.hidden = false;
+    document.addEventListener("keydown", function (e) {
+      if (e.key.toLowerCase() !== "c" || e.metaKey || e.ctrlKey || e.altKey) return;
+      var t = e.target.tagName; if (t === "INPUT" || t === "TEXTAREA") return;
+      navigator.clipboard.writeText(SITE.email).then(function () {
+        var k = hint.querySelector("[data-msg]"); if (k) { k.textContent = "copied"; setTimeout(function () { k.textContent = "to copy my email"; }, 1600); }
+      });
+    });
+  }
 })();

@@ -215,3 +215,13 @@ section { padding:32px 0 4px; margin-top:12px; }
 .btn { padding:9px 16px; font-size:14.5px; border-radius:8px; }
 .status { display:none; }
 .demo { background:none; padding:0; font-size:13px; color:var(--faint); }
+
+/* Reference-inspired: quiet header line, start-here list, small utilities */
+.metabar { display:flex; justify-content:space-between; padding-top:28px; font:400 12px var(--mono); letter-spacing:.06em; text-transform:uppercase; color:var(--faint); }
+.metabar + .hero { padding-top:44px; }
+kbd { font:500 12px var(--mono); border:1px solid var(--line-2); border-bottom-width:2px; border-radius:5px; padding:1px 6px; color:var(--fg); background:var(--panel); }
+.hint { color:var(--muted); font-size:14px; margin:18px 0 0; }
+.more { display:flex; gap:18px; margin-top:16px; font-size:14px; color:var(--muted); }
+.more a, .more button { color:var(--muted); background:none; border:0; padding:0; font:inherit; cursor:pointer; }
+.more a:hover, .more button:hover { color:var(--accent); }
+.updated { color:var(--faint); font-size:13px; }
