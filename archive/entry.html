@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entry — Akshay</title>
+  <meta name="theme-color" content="#0b0b0c">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>try{var t=localStorage.getItem("theme");if(!t)t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+  <link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-page="archive" data-root="../">
+  <a class="skip" href="#content">Skip to content</a>
+  <div class="shell">
+    <aside id="side"></aside>
+    <main id="content">
+      <div class="col entry">
+        <div class="hero" id="entry"></div>
+        <a class="back" href="./">← Back to the archive</a>
+      </div>
+      <footer class="foot"><span>© <span id="year"></span> Akshay</span><button id="top" type="button">Scroll to top ↑</button></footer>
+    </main>
+  </div>
+  <script src="../assets/data.js"></script>
+  <script src="../assets/site.js"></script>
+  <script>
+    var id = new URLSearchParams(location.search).get("id");
+    var e = ARCHIVE.filter(function (x) { return x.id === id; })[0];
+    var out = document.getElementById("entry");
+    if (!e) {
+      document.title = "Not found — Akshay";
+      out.innerHTML = '<p class="eyebrow">404</p><h1>That entry <em>doesn\'t exist.</em></h1>';
+    } else {
+      document.title = e.title + " — Akshay";
+      out.innerHTML = '<p class="eyebrow">' + esc(KINDS[e.kind] || e.kind) + "</p><h1>" + esc(e.title) + "</h1>" +
+        '<div class="meta"><time datetime="' + esc(e.date) + '">' + fmtDate(e.date) + "</time><span>·</span><span>" + e.read + ' min read</span></div>' +
+        '<div class="entry-body">' + e.body.map(function (p) { return "<p>" + esc(p) + "</p>"; }).join("") + "</div>";
+    }
+  </script>
+</body>
+</html>

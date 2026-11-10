@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Private — Akshay</title>
+  <meta name="description" content="Context for serious collaborators. Request access.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0b0b0c">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>try{var t=localStorage.getItem("theme");if(!t)t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+  <link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-page="private" data-root="../">
+  <a class="skip" href="#content">Skip to content</a>
+  <div class="shell">
+    <aside id="side"></aside>
+    <main id="content">
+      <div class="col">
+        <div class="hero">
+          <div class="lock" aria-hidden="true">🔒</div>
+          <p class="eyebrow">Private</p>
+          <h1>Context for <em>serious collaborators.</em></h1>
+          <p class="lede">Some context is not for the open internet. If we might work together, tell me who you are and I'll share access.</p>
+        </div>
+
+        <section aria-labelledby="h-req">
+          <div class="sec-head"><span class="n">01</span><h2 id="h-req">Request access</h2></div>
+          <form class="stack" id="req">
+            <div class="field"><label for="n">NAME</label><input id="n" name="name" required maxlength="100" autocomplete="name"></div>
+            <div class="field"><label for="e">EMAIL</label><input id="e" name="email" type="email" required maxlength="200" autocomplete="email"></div>
+            <div class="field"><label for="m">WHAT WOULD WE WORK ON?</label><textarea id="m" name="message" required maxlength="1000"></textarea></div>
+            <div><button class="btn primary" type="submit">Request access</button></div>
+            <div class="formmsg" id="msg" role="status"></div>
+          </form>
+        </section>
+      </div>
+      <footer class="foot"><span>© <span id="year"></span> Akshay</span><button id="top" type="button">Scroll to top ↑</button></footer>
+    </main>
+  </div>
+  <script src="../assets/data.js"></script>
+  <script src="../assets/site.js"></script>
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm";
+    // Public values: safe in the browser because Row Level Security only allows inserts.
+    const supabase = createClient("https://lfrruybrnycexlavpofx.supabase.co", "sb_publishable_gKgQoz4ysK9ORXq6SuGhQQ_NI7sfTI1");
+    const form = document.getElementById("req"), msg = document.getElementById("msg");
+    form.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const btn = form.querySelector("button"); btn.disabled = true; msg.textContent = "Sending…";
+      const { name, email, message } = Object.fromEntries(new FormData(form));
+      const { error } = await supabase.from("access_requests").insert({ name, email, message });
+      btn.disabled = false;
+      if (error) { msg.textContent = "Something went wrong. Please try again."; return; }
+      msg.textContent = "Thanks. I'll get back to you."; form.reset();
+    });
+  </script>
+</body>
+</html>
