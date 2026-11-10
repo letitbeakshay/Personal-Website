@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Thoughts — Akshay</title>
+  <meta name="description" content="Decisions, reflections and ideas, written in the open.">
+  <meta name="theme-color" content="#161616">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400..600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>try{var t=localStorage.getItem("theme");if(!t)t="dark";document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+  <link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-page="thoughts" data-root="../">
+  <a class="skip" href="#content">Skip to content</a>
+  <div class="shell">
+    <aside id="side"></aside>
+    <main id="content">
+      <div class="col">
+        <div class="hero" style="padding-bottom:20px">
+          <p class="eyebrow">Thoughts</p>
+          <h1>Thoughts, <em>in the open.</em></h1>
+          <p class="lede">Decisions, reflections and half-formed ideas. Newest first, grouped by year.</p>
+        </div>
+        <div class="demo"><b>DEMO</b><span>Entries are placeholders. Replace them in assets/data.js.</span></div>
+        <div class="controls">
+          <input class="search" id="q" type="search" placeholder="Search thoughts…" aria-label="Search thoughts…">
+          <div class="chips" id="chips" role="group" aria-label="Filter"></div>
+        </div>
+        <div id="out" aria-live="polite"></div>
+        <div class="more"><button type="button" data-random>Random entry</button></div>
+      </div>
+      <footer class="foot"><span>© <span id="year"></span> Akshay</span><button id="top" type="button">Scroll to top ↑</button></footer>
+    </main>
+  </div>
+  <script src="../assets/data.js"></script>
+  <script src="../assets/site.js"></script>
+  <script>renderCollection("thought");</script>
+</body>
+</html>
