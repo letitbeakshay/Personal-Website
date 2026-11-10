@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Experiments — Akshay</title>
+  <meta name="description" content="Things I am trying: the hypothesis, the status, and what I learned.">
+  <meta name="theme-color" content="#161616">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400..600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>try{var t=localStorage.getItem("theme");if(!t)t="dark";document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+  <link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-page="experiments" data-root="../">
+  <a class="skip" href="#content">Skip to content</a>
+  <div class="shell">
+    <aside id="side"></aside>
+    <main id="content">
+      <div class="col">
+        <div class="hero" style="padding-bottom:20px">
+          <p class="eyebrow">Experiments</p>
+          <h1>Experiments, <em>with receipts.</em></h1>
+          <p class="lede">Things I'm trying. Each one has a hypothesis, a status, and what I learned.</p>
+        </div>
+        <div class="demo"><b>DEMO</b><span>Entries are placeholders. Replace them in assets/data.js.</span></div>
+        <div class="controls">
+          <input class="search" id="q" type="search" placeholder="Search experiments…" aria-label="Search experiments…">
+          <div class="chips" id="chips" role="group" aria-label="Filter"></div>
+        </div>
+        <div id="out" aria-live="polite"></div>
+        <div class="more"><button type="button" data-random>Random entry</button></div>
+      </div>
+      <footer class="foot"><span>© <span id="year"></span> Akshay</span><button id="top" type="button">Scroll to top ↑</button></footer>
+    </main>
+  </div>
+  <script src="../assets/data.js"></script>
+  <script src="../assets/site.js"></script>
+  <script>renderCollection("experiment");</script>
+</body>
+</html>

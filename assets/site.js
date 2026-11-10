@@ -11,9 +11,9 @@
   }
   window.esc = esc;
 
-  var KINDS = { thought: "Thought", resource: "Resource", memory: "Memory" };
+  var KINDS = { thought: "Thought", resource: "Resource", memory: "Memory", experiment: "Experiment" };
   window.KINDS = KINDS;
-  window.SECTION = { thought: "thoughts/", resource: "resources/", memory: "memories/" };
+  window.SECTION = { thought: "thoughts/", resource: "resources/", memory: "memories/", experiment: "experiments/" };
   window.fmtDate = function (iso) {
     var d = new Date(iso + "T00:00:00");
     return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
@@ -29,7 +29,7 @@
   var items = [
     ["start", "", "Start"], ["about", "about/", "About"],
     ["thoughts", "thoughts/", "Thoughts", n("thought")], ["resources", "resources/", "Resources", n("resource")],
-    ["memories", "memories/", "Memories", n("memory")], ["proofs", "proofs/", "Proofs"]
+    ["memories", "memories/", "Memories", n("memory")], ["experiments", "experiments/", "Experiments", n("experiment")], ["talk", "talk/", "Let's talk"]
   ];
   var nav = items.map(function (i) {
     var cur = i[0] === page ? ' aria-current="page"' : "";

@@ -3,15 +3,15 @@
    Add featured:true to pin an entry to "Start here" on the home page.
    This is easy to move to Supabase later. */
 window.ENTRIES = [
-  { id:"decide-fast-reverse-fast", featured:true, kind:"thought", tag:"Decision", date:"2026-11-02", title:"Decide fast, reverse fast", summary:"Why we stopped waiting for perfect information on two-way-door decisions.", read:3,
+  { id:"decide-fast-reverse-fast", kind:"thought", tag:"Decision", date:"2026-11-02", title:"Decide fast, reverse fast", summary:"Why we stopped waiting for perfect information on two-way-door decisions.", read:3,
     body:["Demo entry. Most product decisions are two-way doors: if we are wrong, we can walk back through. Treating them like one-way doors costs weeks.",
           "The rule we tried: if reversing costs less than a week, decide in the meeting, write down the assumption, and set a date to check it.",
           "What changed: fewer debates, more written assumptions, and a visible record of which bets paid off."] },
-  { id:"on-saying-no", featured:true, kind:"thought", tag:"Product", date:"2026-10-24", title:"On saying no to good ideas", summary:"The backlog is not a promise. Constraints are the strategy.", read:4,
+  { id:"on-saying-no", kind:"thought", tag:"Product", date:"2026-10-24", title:"On saying no to good ideas", summary:"The backlog is not a promise. Constraints are the strategy.", read:4,
     body:["Demo entry. Every good idea has a cost: the thing we did not build instead.",
           "A short list of what we are not doing is more useful than a long list of what we might do.",
           "I keep a 'not now' list on the About page for this reason."] },
-  { id:"why-build-in-public", featured:true, kind:"thought", tag:"Reflection", date:"2026-08-21", title:"Why I build in public", summary:"Writing things down in the open changes what I decide.", read:5,
+  { id:"why-build-in-public", kind:"thought", tag:"Reflection", date:"2026-08-21", title:"Why I build in public", summary:"Writing things down in the open changes what I decide.", read:5,
     body:["Demo entry. When I know a decision will be written down, I make it more carefully and explain it more honestly.",
           "This site is evidence for me first, and for everyone else second."] },
   { id:"pricing-recruiter-pilot", kind:"thought", tag:"Decision", date:"2026-08-04", title:"Recruiter pilot: charge from day one", summary:"We stopped giving the pilot away. What happened next.", read:4,
@@ -31,7 +31,20 @@ window.ENTRIES = [
     body:["Demo entry. A small memory worth keeping: the whiteboard filled up on day one and we never erased the first corner.",
           "I want a place to keep moments like this, so they do not get lost between launches."] },
   { id:"year-end-2025", kind:"memory", tag:"Year-end", date:"2025-12-30", title:"Year-end note to self, 2025", summary:"Placeholder: what the year taught, what to carry into the next one.", read:3,
-    body:["Demo entry. A short letter to future you. What happened, what you learned, and what you want to remember about how it felt."] }
+    body:["Demo entry. A short letter to future you. What happened, what you learned, and what you want to remember about how it felt."] },
+
+  { id:"exp-paid-pilot", kind:"experiment", tag:"Running", date:"2026-10-15", title:"Charging for the recruiter pilot", summary:"A small fee filters for teams with a real hiring problem.", read:2,
+    hypothesis:"A small pilot fee will filter for teams with a real hiring problem and raise usage per pilot.",
+    result:"Demo: usage per pilot is up so far. Sample size is still small, so this stays open.",
+    body:["Demo entry. Started in October. Success means fewer pilots, but higher weekly usage in each one."] },
+  { id:"exp-weekly-log", kind:"experiment", tag:"Learned", date:"2026-08-01", title:"A weekly public log", summary:"Does writing one note a week improve our decisions?", read:2,
+    hypothesis:"Writing one public note a week will reduce repeated debates and make decisions faster.",
+    result:"Demo: fewer repeated debates. Kept, and it became this website.",
+    body:["Demo entry. Ran for eight weeks. The habit stuck, so it moved from experiment to routine."] },
+  { id:"exp-five-minute-check", kind:"experiment", tag:"Shelved", date:"2026-06-12", title:"A five-minute skill check", summary:"Can a candidate prove one skill in five minutes?", read:2,
+    hypothesis:"A five-minute check is enough for a candidate to show one real skill.",
+    result:"Demo: candidates dropped off at the third step. Shelved until the flow is simpler.",
+    body:["Demo entry. Worth revisiting once the verification flow is shorter."] }
 ];
 
 /* Shared demo values for the About page ("Right now"). */

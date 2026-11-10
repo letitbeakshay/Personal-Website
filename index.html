@@ -22,7 +22,6 @@
       <div class="col">
         <div class="metabar"><span>Est. <span id="est"></span></span><span id="clock" aria-hidden="true"></span></div>
         <div class="hero">
-          <div class="status">Building in the open</div>
           <h1>Building in the open.<br>Deciding in public, <em>through focus, constraints, and execution.</em></h1>
           <p class="lede">I document decisions, unfinished work, and thinking in public as evidence. This site evolves with time.</p>
           <div class="actions">
@@ -32,41 +31,24 @@
           <p class="hint" id="copy-email" hidden>Press <kbd>C</kbd> <span data-msg>to copy my email</span></p>
         </div>
 
-        <section aria-labelledby="h-read">
-          <div class="sec-head"><h2 id="h-read">How to read this site</h2></div>
-          <div class="grid">
-            <a class="tile" href="thoughts/"><h3>Thoughts <span>↗</span></h3><p>What I'm thinking, openly</p></a>
-            <a class="tile" href="resources/"><h3>Resources <span>↗</span></h3><p>Books, tools and templates I rely on</p></a>
-            <a class="tile" href="memories/"><h3>Memories <span>↗</span></h3><p>Moments worth keeping</p></a>
-            <a class="tile" href="proofs/"><h3>Proofs <span>↗</span></h3><p>Projects, numbers, and outcomes</p></a>
-          </div>
-          <p class="prose" style="margin-top:22px">I use this website as a system to log work, decisions, and learnings as they happen. It creates a time-indexed record of how ideas move into execution. Nothing is polished for presentation. Everything is here to reduce noise and make progress visible.</p>
-        </section>
-
         <section aria-labelledby="h-now">
-          <div class="sec-head"><h2 id="h-now">Right now (live state)</h2></div>
-          <article class="card media">
-            <img src="https://akshay.world/wp-content/uploads/2026/01/Note-Book-Pencil-Two-Cofounders-Working-1-1-scaled.webp" alt="Two co-founders working together over a notebook and pencil" loading="lazy">
-            <div class="body">
-              <span class="tag">Since 2023</span>
-              <h3 class="big">Co-founder @record</h3>
-              <p>Record started in 2023 with my co-founder Tharun. We're building Record as a trust layer for skills. Helping real abilities become visible, verifiable, and usable in hiring.</p>
-              <p>I take ownership of Product and Recruiter Sales, working closely across user problems, solution design, execution, GTM and adoption.</p>
-              <div class="actions" style="margin-top:16px"><a class="btn ghost" href="about/">More about me →</a></div>
-            </div>
-          </article>
+          <div class="sec-head"><h2 id="h-now">Right now</h2></div>
+          <p class="prose">Co-founder at Record, building a trust layer for skills with Tharun. I own <strong>Product</strong> and <strong>Recruiter Sales</strong>, from user problems and solution design to GTM and adoption.</p>
+          <div class="grid three" id="focus" style="margin-top:18px"></div>
+          <div class="more"><a href="about/">More about me and what I'm focused on</a></div>
         </section>
 
-        <section aria-labelledby="h-start">
-          <div class="sec-head"><h2 id="h-start">Start here</h2></div>
-          <ul class="rows" id="featured"></ul>
+        <section aria-labelledby="h-exp">
+          <div class="sec-head"><h2 id="h-exp">Experiments</h2></div>
+          <div class="grid three" id="exps"></div>
+          <div class="more"><a href="experiments/">All experiments</a></div>
         </section>
 
         <section aria-labelledby="h-latest">
-          <div class="sec-head"><h2 id="h-latest">Newest</h2></div>
+          <div class="sec-head"><h2 id="h-latest">Latest</h2></div>
           <div class="demo"><b>DEMO</b><span>These entries are placeholders. Replace them in assets/data.js.</span></div>
           <ul class="rows" id="latest"></ul>
-          <div class="more"><a href="thoughts/">…and more thoughts</a><button type="button" data-random>Random entry</button></div>
+          <div class="more"><a href="thoughts/">Thoughts</a><a href="resources/">Resources</a><a href="memories/">Memories</a><button type="button" data-random>Random entry</button></div>
         </section>
       </div>
       <footer class="foot"><span>© <span id="year"></span> Akshay · <span class="updated">Last updated <span id="upd"></span></span></span><button id="top" type="button">Scroll to top ↑</button></footer>
@@ -78,8 +60,13 @@
     var byDate = function (a, b) { return b.date.localeCompare(a.date); };
     document.getElementById("est").textContent = SITE.since;
     document.getElementById("upd").textContent = fmtDate(SITE.updated);
-    document.getElementById("featured").innerHTML = ENTRIES.filter(function (e) { return e.featured; }).sort(byDate).map(rowHTML).join("");
-    document.getElementById("latest").innerHTML = ENTRIES.slice().sort(byDate).slice(0, 5).map(rowHTML).join("");
+    document.getElementById("focus").innerHTML = NOW.focus.map(function (f) {
+      return '<div class="tile"><h3>' + esc(f.title) + "</h3><p>" + esc(f.note) + '</p><div class="bar" role="img" aria-label="' + f.pct + ' percent"><i style="width:' + f.pct + '%"></i></div><span class="pct">' + f.pct + "%</span></div>";
+    }).join("");
+    document.getElementById("exps").innerHTML = ENTRIES.filter(function (e) { return e.kind === "experiment"; }).sort(byDate).slice(0, 3).map(function (e) {
+      return '<a class="tile" href="entry/?id=' + encodeURIComponent(e.id) + '"><h3>' + esc(e.title) + "</h3><p>" + esc(e.summary) + '</p><span class="pct">' + esc(e.tag) + "</span></a>";
+    }).join("");
+    document.getElementById("latest").innerHTML = ENTRIES.slice().sort(byDate).slice(0, 6).map(function (e) { return rowHTML(e); }).join("");
   </script>
 </body>
 </html>
