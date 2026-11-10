@@ -26,8 +26,7 @@
   var count = (window.ARCHIVE || []).length;
   var items = [
     ["start", "", "Start"], ["story", "story/", "Story"], ["now", "now/", "Now"],
-    ["archive", "archive/", "Archive", count ? String(count) : ""], ["proofs", "proofs/", "Proofs"],
-    ["private", "private/", "Private", "locked"]
+    ["archive", "archive/", "Archive", count ? String(count) : ""], ["proofs", "proofs/", "Proofs"]
   ];
   var nav = items.map(function (i) {
     var cur = i[0] === page ? ' aria-current="page"' : "";
