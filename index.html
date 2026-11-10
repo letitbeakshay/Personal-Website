@@ -1,100 +1,214 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Akshay — Personal Website</title>
-  <meta name="description" content="Personal website of Akshay.">
+  <title>Akshay — Building in the open</title>
+  <meta name="description" content="A public log of decisions, unfinished work and thinking. Building in the open, deciding in public.">
+  <meta property="og:title" content="Akshay — Building in the open">
+  <meta property="og:description" content="Decisions, unfinished work and thinking, documented in public.">
+  <meta name="theme-color" content="#0b0b0c">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    // Apply saved theme before paint to avoid a flash.
+    try {
+      var t = localStorage.getItem("theme");
+      if (!t) t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  </script>
   <style>
-    :root { --bg:#fff; --fg:#111; --muted:#666; --line:#e5e5e5; --accent:#2f6fed; }
-    @media (prefers-color-scheme: dark) {
-      :root { --bg:#0e0e10; --fg:#f2f2f2; --muted:#9a9a9a; --line:#26262a; --accent:#6c9bff; }
+    :root {
+      --bg:#0b0b0c; --panel:#111113; --panel-2:#161618; --fg:#f4f4f5; --muted:#8d8d94; --faint:#5c5c63;
+      --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.14); --accent:#ff6a3d;
+      --glow: radial-gradient(60% 50% at 70% 0%, rgba(255,255,255,.07), transparent 70%);
+      --shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 20px 50px -20px rgba(0,0,0,.7);
+      --serif:"Instrument Serif", Georgia, serif; --sans:"Inter", system-ui, sans-serif; --mono:"JetBrains Mono", ui-monospace, monospace;
     }
-    * { box-sizing: border-box; }
-    body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 system-ui,-apple-system,sans-serif; }
-    .wrap { max-width:720px; margin:0 auto; padding:0 16px; }
-    header { display:flex; justify-content:space-between; align-items:center; padding:24px 0; }
-    nav a { margin-left:16px; color:var(--muted); text-decoration:none; }
-    nav a:hover { color:var(--fg); }
-    section { padding:48px 0; border-top:1px solid var(--line); }
-    h1 { font-size:2.4rem; line-height:1.15; margin:0 0 12px; }
-    h2 { font-size:1.3rem; margin:0 0 16px; }
-    p { color:var(--muted); margin:0 0 12px; }
-    .grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
-    .card { border:1px solid var(--line); border-radius:10px; padding:16px; }
-    .card h3 { margin:0 0 6px; font-size:1rem; }
-    form { display:grid; gap:12px; }
-    input, textarea { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:transparent; color:var(--fg); font:inherit; }
-    button { justify-self:start; padding:10px 18px; border:0; border-radius:8px; background:var(--accent); color:#fff; font:inherit; cursor:pointer; }
-    button:disabled { opacity:.6; cursor:default; }
-    #status { min-height:1.4em; font-size:.95rem; }
-    footer { padding:32px 0; color:var(--muted); font-size:.9rem; border-top:1px solid var(--line); }
+    [data-theme="light"] {
+      --bg:#f6f6f4; --panel:#ffffff; --panel-2:#f0f0ee; --fg:#111113; --muted:#6b6b72; --faint:#a1a1a8;
+      --line:rgba(0,0,0,.08); --line-2:rgba(0,0,0,.16); --accent:#e4491a;
+      --glow: radial-gradient(60% 50% at 70% 0%, rgba(0,0,0,.05), transparent 70%);
+      --shadow: 0 1px 0 rgba(255,255,255,.8) inset, 0 20px 40px -24px rgba(0,0,0,.25);
+    }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.65 var(--sans); -webkit-font-smoothing:antialiased; }
+    a { color:inherit; text-decoration:none; }
+    :focus-visible { outline:2px solid var(--accent); outline-offset:3px; border-radius:6px; }
+    .skip { position:absolute; left:-999px; top:8px; background:var(--fg); color:var(--bg); padding:8px 12px; border-radius:8px; z-index:20; }
+    .skip:focus { left:8px; }
+
+    .shell { display:grid; grid-template-columns:264px 1fr; min-height:100vh; }
+
+    /* Sidebar */
+    aside { position:sticky; top:0; height:100vh; padding:20px 14px; border-right:1px solid var(--line); background:var(--panel); display:flex; flex-direction:column; gap:22px; }
+    .me { display:flex; align-items:center; gap:10px; padding:6px 8px; }
+    .avatar { width:34px; height:34px; border-radius:50%; background:conic-gradient(from 210deg, var(--accent), #7a5cff, var(--accent)); display:grid; place-items:center; color:#fff; font-weight:600; font-size:14px; }
+    .me b { display:block; font-weight:500; line-height:1.2; }
+    .me span { color:var(--muted); font-size:12.5px; }
+    .label { font:500 11px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--faint); padding:0 10px; margin:0 0 6px; }
+    nav ul { list-style:none; margin:0; padding:0; display:grid; gap:2px; }
+    nav a { display:flex; justify-content:space-between; align-items:center; padding:7px 10px; border-radius:8px; color:var(--muted); transition:background .15s,color .15s; }
+    nav a:hover { background:var(--panel-2); color:var(--fg); }
+    nav a[aria-current="page"] { background:var(--panel-2); color:var(--fg); box-shadow:0 0 0 1px var(--line); }
+    nav a small { font:400 11px var(--mono); color:var(--faint); }
+    .side-foot { margin-top:auto; display:flex; gap:8px; align-items:center; justify-content:space-between; padding:0 6px; color:var(--faint); font:400 12px var(--mono); }
+    .icon-btn { width:32px; height:32px; border-radius:8px; border:1px solid var(--line); background:transparent; color:var(--muted); cursor:pointer; display:grid; place-items:center; }
+    .icon-btn:hover { color:var(--fg); border-color:var(--line-2); }
+
+    /* Main */
+    main { position:relative; padding:0 clamp(20px,5vw,72px) 80px; }
+    main::before { content:""; position:absolute; inset:0 0 auto 0; height:420px; background:var(--glow); pointer-events:none; }
+    .col { position:relative; max-width:760px; margin:0 auto; }
+    .hero { padding:clamp(56px,12vh,120px) 0 48px; }
+    .status { display:inline-flex; gap:8px; align-items:center; font:400 12px var(--mono); color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:5px 12px 5px 10px; margin-bottom:28px; }
+    .dot { width:7px; height:7px; border-radius:50%; background:#34d399; box-shadow:0 0 0 0 rgba(52,211,153,.6); animation:pulse 2.4s infinite; }
+    @keyframes pulse { 70% { box-shadow:0 0 0 7px rgba(52,211,153,0); } 100% { box-shadow:0 0 0 0 rgba(52,211,153,0); } }
+    h1 { font:400 clamp(40px,7vw,68px)/1.04 var(--serif); letter-spacing:-.02em; margin:0 0 22px; }
+    h1 em { color:var(--muted); font-style:italic; }
+    .lede { color:var(--muted); font-size:17px; max-width:560px; margin:0 0 28px; }
+    .actions { display:flex; gap:10px; flex-wrap:wrap; }
+    .btn { display:inline-flex; align-items:center; gap:8px; padding:9px 16px; border-radius:10px; font-weight:500; border:1px solid var(--line-2); transition:transform .15s, background .15s; }
+    .btn:hover { transform:translateY(-1px); }
+    .btn.primary { background:var(--fg); color:var(--bg); border-color:transparent; }
+    .btn.ghost:hover { background:var(--panel-2); }
+
+    section { padding:36px 0 8px; }
+    .sec-head { display:flex; align-items:baseline; gap:10px; margin-bottom:16px; }
+    .sec-head .n { font:400 12px var(--mono); color:var(--accent); }
+    .sec-head h2 { margin:0; font-size:13px; font-weight:500; color:var(--muted); letter-spacing:.02em; }
+    .sec-head::after { content:""; flex:1; height:1px; background:var(--line); }
+
+    .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+    .tile { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px; box-shadow:var(--shadow); transition:border-color .2s, transform .2s; display:block; }
+    .tile:hover { border-color:var(--line-2); transform:translateY(-2px); }
+    .tile h3 { margin:0 0 4px; font-size:15px; font-weight:500; display:flex; justify-content:space-between; }
+    .tile h3 span { color:var(--faint); transition:transform .2s, color .2s; }
+    .tile:hover h3 span { transform:translate(2px,-2px); color:var(--fg); }
+    .tile p { margin:0; color:var(--muted); font-size:14px; }
+    .prose { color:var(--muted); max-width:640px; margin:22px 0 0; }
+
+    .card { background:var(--panel); border:1px solid var(--line); border-radius:16px; overflow:hidden; box-shadow:var(--shadow); }
+    .card img { display:block; width:100%; aspect-ratio:16/8; object-fit:cover; filter:saturate(.9); background:var(--panel-2); }
+    .card .body { padding:20px 22px 22px; }
+    .tag { font:400 11.5px var(--mono); color:var(--accent); letter-spacing:.04em; text-transform:uppercase; }
+    .card h3 { font:400 28px/1.15 var(--serif); margin:8px 0 12px; }
+    .card p { color:var(--muted); margin:0 0 10px; }
+
+    footer { position:relative; max-width:760px; margin:72px auto 0; padding-top:20px; border-top:1px solid var(--line); display:flex; justify-content:space-between; color:var(--faint); font:400 12px var(--mono); }
+    footer button { background:none; border:0; color:inherit; font:inherit; cursor:pointer; }
+    footer button:hover { color:var(--fg); }
+
+    /* Mobile: sidebar becomes a top bar */
+    @media (max-width:860px) {
+      .shell { grid-template-columns:1fr; }
+      aside { position:static; height:auto; border-right:0; border-bottom:1px solid var(--line); padding:12px 14px; gap:10px; }
+      .groups { display:none; }
+      aside.open .groups { display:block; }
+      .menu-btn { display:grid; }
+      .side-top { display:flex; justify-content:space-between; align-items:center; }
+      .side-foot { display:none; }
+      aside.open .side-foot { display:flex; margin-top:6px; }
+      .grid { grid-template-columns:1fr; }
+    }
+    @media (min-width:861px) { .menu-btn { display:none; } .side-top .icon-btn.theme-top { display:none; } }
+    @media (prefers-reduced-motion:reduce) { * { animation:none !important; transition:none !important; } html { scroll-behavior:auto; } }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <strong>Akshay</strong>
-      <nav><a href="#about">About</a><a href="#projects">Projects</a><a href="#contact">Contact</a></nav>
-    </header>
-
-    <section id="about" style="border-top:0">
-      <h1>Hi, I'm Akshay.</h1>
-      <p>A short line about what you do goes here. Replace this text with your own bio.</p>
-    </section>
-
-    <section id="projects">
-      <h2>Projects</h2>
-      <div class="grid">
-        <div class="card"><h3>Project one</h3><p>Short description.</p></div>
-        <div class="card"><h3>Project two</h3><p>Short description.</p></div>
-        <div class="card"><h3>Project three</h3><p>Short description.</p></div>
+  <a class="skip" href="#content">Skip to content</a>
+  <div class="shell">
+    <aside id="side">
+      <div class="side-top">
+        <a class="me" href="/" aria-label="Akshay, home">
+          <div class="avatar" aria-hidden="true">A</div>
+          <div><b>Akshay</b><span>Co-founder, Record</span></div>
+        </a>
+        <button class="icon-btn menu-btn" id="menu" aria-label="Toggle menu" aria-expanded="false">☰</button>
       </div>
-    </section>
+      <div class="groups">
+        <p class="label">Navigate</p>
+        <nav aria-label="Primary">
+          <ul>
+            <li><a href="/" aria-current="page">Start</a></li>
+            <li><a href="/story/">Story</a></li>
+            <li><a href="/now/">Now</a></li>
+            <li><a href="/archive/">Archive</a></li>
+            <li><a href="/proofs/">Proofs</a></li>
+            <li><a href="/private/">Private <small>locked</small></a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="side-foot">
+        <span>akshay.world</span>
+        <button class="icon-btn theme" aria-label="Toggle light and dark theme">◐</button>
+      </div>
+    </aside>
 
-    <section id="contact">
-      <h2>Get in touch</h2>
-      <form id="contact-form">
-        <input name="name" placeholder="Your name" required maxlength="100">
-        <input name="email" type="email" placeholder="Your email" required maxlength="200">
-        <textarea name="message" rows="5" placeholder="Message" required maxlength="2000"></textarea>
-        <button type="submit">Send</button>
-        <div id="status" role="status"></div>
-      </form>
-    </section>
+    <main id="content">
+      <div class="col">
+        <div class="hero">
+          <div class="status"><i class="dot"></i> Building in the open</div>
+          <h1>Building in the open.<br>Deciding in public, <em>through focus, constraints, and execution.</em></h1>
+          <p class="lede">I document decisions, unfinished work, and thinking in public as evidence. This site evolves with time.</p>
+          <div class="actions">
+            <a class="btn primary" href="/archive/">Read my latest archive →</a>
+            <a class="btn ghost" href="/story/">Read my story</a>
+          </div>
+        </div>
 
-    <footer>© <span id="year"></span> Akshay</footer>
+        <section aria-labelledby="h-read">
+          <div class="sec-head"><span class="n">01</span><h2 id="h-read">How to read this site</h2></div>
+          <div class="grid">
+            <a class="tile" href="/now/"><h3>Now <span>↗</span></h3><p>Current focus and priorities</p></a>
+            <a class="tile" href="/archive/"><h3>Archive <span>↗</span></h3><p>Past focus, decisions, and learnings</p></a>
+            <a class="tile" href="/proofs/"><h3>Proofs <span>↗</span></h3><p>Projects, numbers, and outcomes</p></a>
+            <a class="tile" href="/private/"><h3>Private <span>↗</span></h3><p>Context for serious collaborators</p></a>
+          </div>
+          <p class="prose">I use this website as a system to log work, decisions, and learnings as they happen. It creates a time-indexed record of how ideas move into execution. Nothing is polished for presentation. Everything is here to reduce noise and make progress visible.</p>
+        </section>
+
+        <section aria-labelledby="h-now">
+          <div class="sec-head"><span class="n">02</span><h2 id="h-now">Right now (live state)</h2></div>
+          <article class="card">
+            <img src="https://akshay.world/wp-content/uploads/2026/01/Note-Book-Pencil-Two-Cofounders-Working-1-1-scaled.webp" alt="Two co-founders working together over a notebook and pencil" loading="lazy">
+            <div class="body">
+              <span class="tag">Since 2023</span>
+              <h3>Co-founder @record</h3>
+              <p>Record started in 2023 with my co-founder Tharun. We're building Record as a trust layer for skills. Helping real abilities become visible, verifiable, and usable in hiring.</p>
+              <p>I take ownership of Product and Recruiter Sales, working closely across user problems, solution design, execution, GTM and adoption.</p>
+              <div class="actions" style="margin-top:16px"><a class="btn ghost" href="/now/">More about Record →</a></div>
+            </div>
+          </article>
+        </section>
+      </div>
+
+      <footer>
+        <span>© <span id="year"></span> Akshay</span>
+        <button id="top" type="button">Scroll to top ↑</button>
+      </footer>
+    </main>
   </div>
 
-  <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm";
-
-    // Public values: safe in the browser because Row Level Security restricts access.
-    const supabase = createClient(
-      "https://lfrruybrnycexlavpofx.supabase.co",
-      "sb_publishable_gKgQoz4ysK9ORXq6SuGhQQ_NI7sfTI1"
-    );
-
+  <script>
+    var root = document.documentElement;
     document.getElementById("year").textContent = new Date().getFullYear();
-
-    const form = document.getElementById("contact-form");
-    const status = document.getElementById("status");
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const btn = form.querySelector("button");
-      btn.disabled = true;
-      status.textContent = "Sending…";
-      const { name, email, message } = Object.fromEntries(new FormData(form));
-      const { error } = await supabase.from("messages").insert({ name, email, message });
-      if (error) {
-        status.textContent = "Something went wrong. Please try again.";
-        btn.disabled = false;
-      } else {
-        status.textContent = "Thanks! Your message was sent.";
-        form.reset();
-        btn.disabled = false;
-      }
+    document.querySelectorAll(".theme").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        try { localStorage.setItem("theme", next); } catch (e) {}
+      });
     });
+    var side = document.getElementById("side"), menu = document.getElementById("menu");
+    menu.addEventListener("click", function () {
+      var open = side.classList.toggle("open");
+      menu.setAttribute("aria-expanded", open);
+    });
+    document.getElementById("top").addEventListener("click", function () { scrollTo({ top: 0 }); });
   </script>
 </body>
 </html>
