@@ -1,18 +1,18 @@
 /* Palette: warm-neutral paper, near-black ink, one ultramarine accent. */
 :root {
-  --bg:#f5f5f2; --panel:#ffffff; --panel-2:#ecece7; --tint:rgba(37,64,255,.07);
+  --bg:#f5f5f2; --panel:#ffffff; --panel-2:#ecece7; --tint:rgba(217,65,26,.07);
   --fg:#15171c; --muted:#5b606b; --faint:#8a8f9a;
   --line:rgba(21,23,28,.10); --line-2:rgba(21,23,28,.24);
-  --accent:#2540ff; --on-accent:#ffffff; --ok:#12805c;
+  --accent:#d9411a; --on-accent:#ffffff; --ok:#12805c;
   --display:"Instrument Serif", Georgia, "Times New Roman", serif;
   --sans:"Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono:"Geist Mono", ui-monospace, "SF Mono", monospace;
 }
 [data-theme="dark"] {
-  --bg:#0e1014; --panel:#151820; --panel-2:#1c2029; --tint:rgba(138,155,255,.10);
-  --fg:#edeef1; --muted:#9aa0ac; --faint:#6b7280;
-  --line:rgba(237,238,241,.10); --line-2:rgba(237,238,241,.26);
-  --accent:#8a9bff; --on-accent:#0e1014; --ok:#4cc79a;
+  --bg:#161616; --panel:#1d1d1d; --panel-2:#262626; --tint:rgba(255,122,69,.10);
+  --fg:#ececec; --muted:#9b9b9b; --faint:#6e6e6e;
+  --line:rgba(255,255,255,.09); --line-2:rgba(255,255,255,.22);
+  --accent:#ff7a45; --on-accent:#1a0f09; --ok:#4cc79a;
 }
 * { box-sizing:border-box; }
 html { scroll-behavior:smooth; }
@@ -195,3 +195,23 @@ h1 em { font-style:italic; color:var(--faint); }
 .row h3 { font:600 16.5px/1.35 var(--sans); letter-spacing:-.005em; }
 .principles b { font:600 17px/1.35 var(--sans); letter-spacing:-.005em; }
 .principles li::before { font:600 14px var(--sans); }
+
+/* Minimal pass: quieter type, tighter space, no decoration. */
+.hero { padding:clamp(40px,8vh,80px) 0 28px; }
+h1 { font:400 clamp(32px,4.4vw,46px)/1.12 var(--display); letter-spacing:-.015em; margin:0 0 16px; }
+.lede { font-size:17px; margin:0 0 24px; }
+.eyebrow { font-size:13px; margin:0 0 12px; }
+.sec-head h2 { font:400 24px/1.2 var(--display); }
+.card h3.big { font:400 28px/1.15 var(--display); margin:6px 0 10px; }
+.case h3 { font:400 26px/1.15 var(--display); }
+.month { font:400 20px/1.2 var(--display); margin:28px 0 8px; }
+.metric b { font:400 40px/1 var(--display); }
+.entry h1 { font-size:clamp(30px,4.2vw,42px); }
+.entry-body p { font-size:17px; }
+section { padding:32px 0 4px; margin-top:12px; }
+.prose { font-size:16px; }
+.list li { font-size:16px; padding:11px 4px; }
+.tile, .card { border-radius:10px; padding:18px; }
+.btn { padding:9px 16px; font-size:14.5px; border-radius:8px; }
+.status { display:none; }
+.demo { background:none; padding:0; font-size:13px; color:var(--faint); }
