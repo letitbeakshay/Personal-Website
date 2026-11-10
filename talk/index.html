@@ -20,20 +20,20 @@
       <div class="col">
         <div class="hero">
           <p class="eyebrow">Let's talk</p>
-          <h1>Let's talk, <em>openly.</em></h1>
-          <p class="lede">If something here resonates, I'd like to hear from you. Tell me what you're working on and what you'd like to talk about.</p>
-          <p class="hint" id="copy-email" hidden>Press <kbd>C</kbd> <span data-msg>to copy my email</span></p>
+          <h1>Let's talk about <em>something worth building.</em></h1>
+          <p class="lede">Product, hiring, or building in the open: if something here resonates, I'd like to hear from you.</p>
         </div>
-        <section aria-labelledby="h-msg">
-          <div class="sec-head"><h2 id="h-msg">Send a message</h2></div>
-          <form class="stack" id="msgform">
-            <div class="field"><label for="n">Name</label><input id="n" name="name" required maxlength="100" autocomplete="name"></div>
-            <div class="field"><label for="e">Email</label><input id="e" name="email" type="email" required maxlength="200" autocomplete="email"></div>
-            <div class="field"><label for="m">Message</label><textarea id="m" name="message" required maxlength="2000"></textarea></div>
-            <div class="field" style="position:absolute;left:-9999px" aria-hidden="true"><label for="website">Leave this empty</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
-            <div><button class="btn primary" type="submit">Send message</button></div>
-            <div class="formmsg" id="msg" role="status"></div>
-          </form>
+
+        <section aria-labelledby="h-mail">
+          <div class="sec-head"><h2 id="h-mail">Direct mail</h2></div>
+          <p class="prose">I read everything and reply when I can. Keep it short and to the point, and tell me what you're working on.</p>
+          <div id="mail"></div>
+          <p class="hint" id="copy-email" hidden>Press <kbd>C</kbd> <span data-msg>to copy my email</span></p>
+        </section>
+
+        <section aria-labelledby="h-else">
+          <div class="sec-head"><h2 id="h-else">Elsewhere</h2></div>
+          <div class="grid three" id="socials"></div>
         </section>
       </div>
       <footer class="foot"><span>© <span id="year"></span> Akshay</span><button id="top" type="button">Scroll to top ↑</button></footer>
@@ -41,21 +41,24 @@
   </div>
   <script src="../assets/data.js"></script>
   <script src="../assets/site.js"></script>
-  <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm";
-    // Public values: safe in the browser because Row Level Security only allows inserts.
-    const supabase = createClient("https://lfrruybrnycexlavpofx.supabase.co", "sb_publishable_gKgQoz4ysK9ORXq6SuGhQQ_NI7sfTI1");
-    const form = document.getElementById("msgform"), msg = document.getElementById("msg");
-    form.addEventListener("submit", async (ev) => {
-      ev.preventDefault();
-      const data = Object.fromEntries(new FormData(form));
-      if (data.website) { msg.textContent = "Thanks. I'll get back to you."; return; } // spam trap
-      const btn = form.querySelector("button"); btn.disabled = true; msg.textContent = "Sending…";
-      const { error } = await supabase.from("messages").insert({ name: data.name, email: data.email, message: data.message });
-      btn.disabled = false;
-      if (error) { msg.textContent = "Something went wrong. Please try again."; return; }
-      msg.textContent = "Thanks. I'll get back to you."; form.reset();
-    });
+  <script>
+    var mail = document.getElementById("mail"), soc = document.getElementById("socials");
+    if (SITE.email) {
+      mail.innerHTML = '<button class="btn primary" id="copy" type="button">Copy email address</button> <a class="btn ghost" href="mailto:' + esc(SITE.email) + '">Open in mail app</a>';
+      document.getElementById("copy").addEventListener("click", function () {
+        var b = this; navigator.clipboard.writeText(SITE.email).then(function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy email address"; }, 1600); });
+      });
+    } else {
+      mail.innerHTML = '<div class="demo"><b>TODO</b><span>Add your email in assets/data.js (SITE.email) to show the Copy email button.</span></div>';
+    }
+    var links = SITE.socials.filter(function (x) { return x.url; });
+    if (links.length) {
+      soc.innerHTML = links.map(function (x) {
+        return '<a class="tile" href="' + esc(x.url) + '" target="_blank" rel="noopener noreferrer"><h3>' + esc(x.name) + " <span>↗</span></h3><p>" + esc(x.handle) + "</p></a>";
+      }).join("");
+    } else {
+      soc.outerHTML = '<div class="demo"><b>TODO</b><span>Add your profiles in assets/data.js (SITE.socials). Only entries with a url are shown.</span></div>';
+    }
   </script>
 </body>
 </html>

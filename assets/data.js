@@ -61,4 +61,12 @@ window.NOW = {
 };
 
 /* Site-wide settings. Fill in email to enable the "Press C to copy my email" shortcut. */
-window.SITE = { since: 2023, tz: "Asia/Kolkata", tzLabel: "IST", email: "", updated: "2026-11-10" };
+window.SITE = {
+  since: 2023, tz: "Asia/Kolkata", tzLabel: "IST", updated: "2026-11-10",
+  email: "",   // e.g. "you@example.com". Enables the Copy email button and the "Press C" shortcut.
+  socials: [   // Only entries with a url are shown on the Let's talk page.
+    { name: "LinkedIn", handle: "", url: "" },
+    { name: "X", handle: "", url: "" },
+    { name: "Instagram", handle: "", url: "" }
+  ]
+};
