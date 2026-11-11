@@ -20,35 +20,30 @@
     <aside id="side"></aside>
     <main id="content">
       <div class="col">
-        <div class="metabar"><span>Est. <span id="est"></span></span><span id="daysleft" title="Days until my 60th birthday"></span></div>
-        <div class="hero">
-          <h1>Building in the open.<br>Deciding in public, <em>through focus, constraints, and execution.</em></h1>
-          <p class="lede">I document decisions, unfinished work, and thinking in public as evidence. This site evolves with time.</p>
-          <div class="actions">
-            <a class="btn primary" href="thoughts/">Read my latest thoughts →</a>
-            <a class="btn ghost" href="about/">About me</a>
-          </div>
+        <div class="metabar"><span>Est. <span id="est"></span></span></div>
+
+        <div class="intro">
+          <h1>Hi, I'm Akshay.</h1>
+          <p class="lede">I'm a co-founder at Record, where we're building a trust layer for skills with my co-founder Tharun. I own product and recruiter sales. This site is where I think in public: decisions, unfinished work, and things worth keeping.</p>
           <p class="hint" id="copy-email" hidden>Press <kbd>C</kbd> <span data-msg>to copy my email</span></p>
         </div>
 
+        <figure class="life" aria-labelledby="life-cap">
+          <div class="dots" id="dots" aria-hidden="true"></div>
+          <figcaption id="life-cap"></figcaption>
+        </figure>
+
         <section aria-labelledby="h-now">
           <div class="sec-head"><h2 id="h-now">Right now</h2></div>
-          <p class="prose">Co-founder at Record, building a trust layer for skills with Tharun. I own <strong>Product</strong> and <strong>Recruiter Sales</strong>, from user problems and solution design to GTM and adoption.</p>
-          <div class="grid three" id="focus" style="margin-top:18px"></div>
-          <div class="more"><a href="about/">More about me and what I'm focused on</a></div>
+          <dl class="nowrows" id="nowrows"></dl>
+          <div class="more"><a href="about/">More about me</a></div>
         </section>
 
-        <section aria-labelledby="h-exp">
-          <div class="sec-head"><h2 id="h-exp">Experiments</h2></div>
-          <div class="grid three" id="exps"></div>
-          <div class="more"><a href="experiments/">All experiments</a></div>
-        </section>
-
-        <section aria-labelledby="h-latest">
-          <div class="sec-head"><h2 id="h-latest">Latest</h2></div>
+        <section aria-labelledby="h-idx">
+          <div class="sec-head"><h2 id="h-idx">Writing and notes</h2></div>
           <div class="demo"><b>DEMO</b><span>These entries are placeholders. Replace them in assets/data.js.</span></div>
-          <ul class="rows" id="latest"></ul>
-          <div class="more"><a href="thoughts/">Thoughts</a><a href="resources/">Resources</a><a href="memories/">Memories</a><button type="button" data-random>Random entry</button></div>
+          <ul class="idx" id="idx"></ul>
+          <div class="more"><a href="thoughts/">Thoughts</a><a href="resources/">Resources</a><a href="memories/">Memories</a><a href="experiments/">Experiments</a><button type="button" data-random>Random entry</button></div>
         </section>
       </div>
       <footer class="foot"><span>© <span id="year"></span> Akshay · <span class="updated">Last updated <span id="upd"></span></span></span><button id="top" type="button">Scroll to top ↑</button></footer>
@@ -59,20 +54,40 @@
   <script>
     var byDate = function (a, b) { return b.date.localeCompare(a.date); };
     document.getElementById("est").textContent = SITE.since;
-    (function () {
-      var b = SITE.born.split("-").map(Number), end = Date.UTC(b[0] + SITE.horizonAge, b[1] - 1, b[2]);
-      var now = new Date(), today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
-      var d = Math.max(0, Math.round((end - today) / 864e5));
-      document.getElementById("daysleft").textContent = d.toLocaleString("en-IN") + " days to " + SITE.horizonAge;
-    })();
     document.getElementById("upd").textContent = fmtDate(SITE.updated);
-    document.getElementById("focus").innerHTML = NOW.focus.map(function (f) {
-      return '<div class="tile"><h3>' + esc(f.title) + "</h3><p>" + esc(f.note) + '</p><div class="bar" role="img" aria-label="' + f.pct + ' percent"><i style="width:' + f.pct + '%"></i></div><span class="pct">' + f.pct + "%</span></div>";
+
+    // Your years, as dots: one per year, up to the horizon age.
+    (function () {
+      var b = SITE.born.split("-").map(Number), H = SITE.horizonAge;
+      var now = new Date(), today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+      var end = Date.UTC(b[0] + H, b[1] - 1, b[2]), start = Date.UTC(b[0], b[1] - 1, b[2]);
+      var daysLeft = Math.max(0, Math.round((end - today) / 864e5));
+      var lived = Math.min(H, (today - start) / (365.25 * 864e5));
+      var full = Math.floor(lived), part = lived - full, html = "";
+      for (var i = 0; i < H; i++) {
+        var cls = i < full ? "on" : "";
+        var style = (i === full && part > 0) ? ' style="--p:' + Math.round(part * 100) + '%"' : "";
+        html += '<i class="' + (style ? "now" : cls) + '"' + style + "></i>";
+      }
+      document.getElementById("dots").innerHTML = html;
+      document.getElementById("life-cap").textContent = "Year " + (full + 1) + " of " + H + ". " + daysLeft.toLocaleString("en-IN") + " days to go.";
+    })();
+
+    // Right now: focus, what is running, what I'm learning.
+    (function () {
+      var running = ENTRIES.filter(function (e) { return e.kind === "experiment" && e.tag === "Running"; }).sort(byDate)[0];
+      var rows = [["Focus", NOW.focus[0] && NOW.focus[0].title, "about/"],
+                  ["Running", running && running.title, running && "entry/?id=" + encodeURIComponent(running.id)],
+                  ["Learning", NOW.learning[0], "about/"]].filter(function (r) { return r[1]; });
+      document.getElementById("nowrows").innerHTML = rows.map(function (r) {
+        return "<div><dt>" + r[0] + '</dt><dd><a href="' + r[2] + '">' + esc(r[1]) + "</a></dd></div>";
+      }).join("");
+    })();
+
+    // Index of everything, newest first.
+    document.getElementById("idx").innerHTML = ENTRIES.slice().sort(byDate).slice(0, 8).map(function (e) {
+      return '<li><a href="entry/?id=' + encodeURIComponent(e.id) + '"><time datetime="' + esc(e.date) + '">' + fmtDay(e.date) + "</time><span>" + esc(e.title) + "</span><em>" + esc(KINDS[e.kind]) + "</em></a></li>";
     }).join("");
-    document.getElementById("exps").innerHTML = ENTRIES.filter(function (e) { return e.kind === "experiment"; }).sort(byDate).slice(0, 3).map(function (e) {
-      return '<a class="tile" href="entry/?id=' + encodeURIComponent(e.id) + '"><h3>' + esc(e.title) + "</h3><p>" + esc(e.summary) + '</p><span class="pct">' + esc(e.tag) + "</span></a>";
-    }).join("");
-    document.getElementById("latest").innerHTML = ENTRIES.slice().sort(byDate).slice(0, 6).map(function (e) { return rowHTML(e); }).join("");
   </script>
 </body>
 </html>
