@@ -1,4 +1,4 @@
-/* DEMO DATA — replace with your own. Every entry below is a placeholder.
+/* DEMO DATA: replace with your own. Every entry below is a placeholder.
    kind: "thought" | "resource" | "memory"   tag: a short category shown on the entry.
    Add featured:true to pin an entry to "Start here" on the home page.
    This is easy to move to Supabase later. */

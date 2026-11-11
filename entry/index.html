@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Entry — Akshay</title>
+  <title>Entry | Akshay</title>
   <meta name="description" content="">
   <meta name="theme-color" content="#161616">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,10 +36,10 @@
   <script>
     var out = document.getElementById("entry");
     if (!e) {
-      document.title = "Not found — Akshay";
+      document.title = "Not found | Akshay";
       out.innerHTML = '<p class="eyebrow">404</p><h1>That entry <em>doesn\'t exist.</em></h1>';
     } else {
-      document.title = e.title + " — Akshay";
+      document.title = e.title + " | Akshay";
       out.innerHTML = '<p class="eyebrow">' + esc(KINDS[e.kind]) + " · " + esc(e.tag) + "</p><h1>" + esc(e.title) + "</h1>" +
         '<div class="meta"><time datetime="' + esc(e.date) + '">' + fmtDate(e.date) + "</time><span>·</span><span>" + e.read + ' min read</span></div>' +
         (e.hypothesis ? '<div class="case" style="margin-bottom:24px"><dl><dt>Hypothesis</dt><dd>' + esc(e.hypothesis) + "</dd><dt>Status</dt><dd>" + esc(e.tag) + "</dd><dt>Result</dt><dd>" + esc(e.result || "") + "</dd></dl></div>" : "") +
