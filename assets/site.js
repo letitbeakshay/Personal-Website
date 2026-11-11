@@ -11,9 +11,9 @@
   }
   window.esc = esc;
 
-  var KINDS = { thought: "Thought", resource: "Resource", memory: "Memory", experiment: "Experiment" };
+  var KINDS = { thought: "Thought", resource: "Resource", memory: "Memory", faith: "Faith" };
   window.KINDS = KINDS;
-  window.SECTION = { thought: "thoughts/", resource: "resources/", memory: "memories/", experiment: "experiments/" };
+  window.SECTION = { thought: "notes/", resource: "notes/", memory: "notes/", faith: "faith/" };
   window.fmtDate = function (iso) {
     var d = new Date(iso + "T00:00:00");
     return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
@@ -25,11 +25,9 @@
 
   // Sidebar
   var E = window.ENTRIES || [];
-  function n(k) { return String(E.filter(function (e) { return e.kind === k; }).length); }
   var items = [
     ["start", "", "Start"], ["about", "about/", "About"],
-    ["thoughts", "thoughts/", "Thoughts", n("thought")], ["resources", "resources/", "Resources", n("resource")],
-    ["memories", "memories/", "Memories", n("memory")], ["experiments", "experiments/", "Experiments", n("experiment")], ["talk", "talk/", "Let's talk"]
+    ["notes", "notes/", "Notes"], ["faith", "faith/", "Faith"], ["talk", "talk/", "Let's talk"]
   ];
   var nav = items.map(function (i) {
     var cur = i[0] === page ? ' aria-current="page"' : "";
@@ -72,38 +70,6 @@
       '<span class="kind">' + esc(label || KINDS[e.kind] || e.kind) + "</span></a></li>";
   };
 
-  // Collection page: entries of one kind, grouped by year, with search and tag filters.
-  window.renderCollection = function (kind) {
-    var tag = "all", term = "";
-    var list = E.filter(function (e) { return e.kind === kind; });
-    var tags = []; list.forEach(function (e) { if (tags.indexOf(e.tag) < 0) tags.push(e.tag); });
-    var chips = document.getElementById("chips"), out = document.getElementById("out");
-    chips.innerHTML = ["all"].concat(tags).map(function (t) {
-      return '<button class="chip" type="button" data-t="' + esc(t) + '" aria-pressed="' + (t === "all") + '">' + (t === "all" ? "All" : esc(t)) + "</button>";
-    }).join("");
-    function render() {
-      var rows = list.filter(function (e) {
-        var hay = (e.title + " " + e.summary + " " + e.body.join(" ")).toLowerCase();
-        return (tag === "all" || e.tag === tag) && hay.indexOf(term) !== -1;
-      }).sort(function (a, b) { return b.date.localeCompare(a.date); });
-      if (!rows.length) { out.innerHTML = '<p class="empty">Nothing here yet.</p>'; return; }
-      var html = "", cur = "";
-      rows.forEach(function (e) {
-        var y = e.date.slice(0, 4);
-        if (y !== cur) { if (cur) html += "</ul>"; html += '<div class="month">' + y + '</div><ul class="rows">'; cur = y; }
-        html += rowHTML(e, e.tag);
-      });
-      out.innerHTML = html + "</ul>";
-    }
-    chips.addEventListener("click", function (ev) {
-      var b = ev.target.closest(".chip"); if (!b) return;
-      tag = b.getAttribute("data-t");
-      chips.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-pressed", c === b); });
-      render();
-    });
-    document.getElementById("q").addEventListener("input", function () { term = this.value.trim().toLowerCase(); render(); });
-    render();
-  };
 
   // Random entry
   window.randomEntryURL = function () {

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notes | Akshay</title>
+  <meta name="description" content="Notes, newest first.">
+  <meta name="theme-color" content="#161616">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400..600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>try{var t=localStorage.getItem("theme");if(!t)t="dark";document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+  <link rel="stylesheet" href="../assets/site.css">
+</head>
+<body data-page="notes" data-root="../">
+  <a class="skip" href="#content">Skip to content</a>
+  <div class="shell">
+    <aside id="side"></aside>
+    <main id="content">
+      <div class="col">
+        <div class="intro">
+          <h1>Notes</h1>
+          <p class="lede">Newest first.</p>
+        </div>
+        <div class="demo"><b>DEMO</b><span>Placeholders. Replace them in assets/data.js.</span></div>
+        <ul class="idx" id="idx" style="margin-top:12px"></ul>
+      </div>
+      <footer class="foot"><span>© <span id="year"></span> Akshay</span><button id="top" type="button">Top ↑</button></footer>
+    </main>
+  </div>
+  <script src="../assets/data.js"></script>
+  <script src="../assets/site.js"></script>
+  <script>
+    var byDate = function (a, b) { return b.date.localeCompare(a.date); };
+    function line(e) {
+      return '<li><a href="../entry/?id=' + encodeURIComponent(e.id) + '"><time datetime="' + esc(e.date) + '">' + fmtDate(e.date) + "</time><span>" + esc(e.title) + "</span><em>" + esc(KINDS[e.kind]) + "</em></a></li>";
+    }
+    document.getElementById("idx").innerHTML = ENTRIES.filter(function (e) { return e.kind !== "faith"; }).sort(byDate).map(line).join("");
+  </script>
+</body>
+</html>

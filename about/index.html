@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>About | Akshay</title>
-  <meta name="description" content="Who I am, what I am doing now, and the principles I work by.">
+  <meta name="description" content="About Akshay.">
   <meta name="theme-color" content="#161616">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,55 +18,18 @@
     <aside id="side"></aside>
     <main id="content">
       <div class="col">
-        <div class="hero">
-          <p class="eyebrow">About</p>
-          <h1>Who I am, <em>and what I'm doing now.</em></h1>
-          <p class="lede">Product person and founder. I learn by building, and I keep the receipts.</p>
+        <div class="intro">
+          <h1>About</h1>
         </div>
-        <div class="demo"><b>DEMO</b><span>Timeline, principles and focus items are placeholders. Replace with your own.</span></div>
-
-        <section aria-labelledby="h-r">
-          <div class="sec-head"><h2 id="h-r">Right now <span class="updated" style="font:400 14px var(--sans)">· updated <span id="upd"></span></span></h2></div>
-          <p class="prose">Record started in 2023 with my co-founder Tharun. We're building Record as a trust layer for skills. Helping real abilities become visible, verifiable, and usable in hiring.</p>
-          <p class="prose">I take ownership of <strong>Product</strong> and <strong>Recruiter Sales</strong>, working closely across user problems, solution design, execution, GTM and adoption.</p>
-          <div class="grid three" id="focus" style="margin-top:20px"></div>
-        </section>
-
-        <section aria-labelledby="h-tl">
-          <div class="sec-head"><h2 id="h-tl">Journey</h2></div>
-          <ol class="timeline">
-            <li><span class="when">2023 to now</span><h3>Co-founder, Record</h3><p>Building a trust layer for skills with Tharun. I own Product and Recruiter Sales.</p></li>
-            <li><span class="when">Demo · 2021 to 2023</span><h3>Product role at an earlier company</h3><p>Placeholder: what you owned, what you shipped, what it taught you.</p></li>
-            <li><span class="when">Demo · 2019 to 2021</span><h3>First job</h3><p>Placeholder: where it started and the first real lesson.</p></li>
-          </ol>
-        </section>
-
-        <section aria-labelledby="h-pr">
-          <div class="sec-head"><h2 id="h-pr">Principles</h2></div>
-          <ol class="principles">
-            <li><div><b>Write it down.</b><span>Decisions made in public are made more carefully.</span></div></li>
-            <li><div><b>Constraints are the strategy.</b><span>A short list of what we are not doing beats a long roadmap.</span></div></li>
-            <li><div><b>Evidence over opinion.</b><span>Numbers, quotes and shipped work carry more weight than adjectives.</span></div></li>
-            <li><div><b>Reduce noise.</b><span>Nothing here is polished for presentation. Progress should be visible.</span></div></li>
-          </ol>
-        </section>
-
-        <section aria-labelledby="h-n"><div class="sec-head"><h2 id="h-n">Not doing</h2></div><ul class="list no" id="not"></ul></section>
-        <section aria-labelledby="h-l"><div class="sec-head"><h2 id="h-l">Learning</h2></div><ul class="list" id="learn"></ul></section>
-        <section aria-labelledby="h-q"><div class="sec-head"><h2 id="h-q">Open questions</h2></div><ul class="list q" id="ques"></ul></section>
+        <div class="demo"><b>DEMO</b><span>Replace this text with your own, in about/index.html.</span></div>
+        <p class="prose" style="margin-top:16px">I'm Akshay, a co-founder at Record, where we're building a trust layer for skills with my co-founder Tharun.</p>
+        <p class="prose">Write a few lines about yourself here: what you care about, how you like to work, and anything you'd want a new visitor to know.</p>
+        <p class="prose">To get in touch, see <a href="../talk/" style="color:var(--fg);text-decoration:underline">Let's talk</a>.</p>
       </div>
-      <footer class="foot"><span>© <span id="year"></span> Akshay</span><button id="top" type="button">Scroll to top ↑</button></footer>
+      <footer class="foot"><span>© <span id="year"></span> Akshay</span><button id="top" type="button">Top ↑</button></footer>
     </main>
   </div>
   <script src="../assets/data.js"></script>
   <script src="../assets/site.js"></script>
-  <script>
-    document.getElementById("upd").textContent = fmtDate(NOW.updated);
-    document.getElementById("focus").innerHTML = NOW.focus.map(function (f) {
-      return '<div class="tile"><h3>' + esc(f.title) + "</h3><p>" + esc(f.note) + '</p><div class="bar" role="img" aria-label="' + f.pct + ' percent"><i style="width:' + f.pct + '%"></i></div><span class="pct">' + f.pct + "%</span></div>";
-    }).join("");
-    function fill(id, arr) { document.getElementById(id).innerHTML = arr.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join(""); }
-    fill("not", NOW.notDoing); fill("learn", NOW.learning); fill("ques", NOW.questions);
-  </script>
 </body>
 </html>

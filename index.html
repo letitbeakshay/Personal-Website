@@ -3,10 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Akshay | Building in the open</title>
-  <meta name="description" content="A public log of decisions, unfinished work and thinking. Building in the open, deciding in public.">
-  <meta property="og:title" content="Akshay | Building in the open">
-  <meta property="og:description" content="Decisions, unfinished work and thinking, documented in public.">
+  <title>Akshay | Notes and things worth remembering</title>
+  <meta name="description" content="Co-founder at Record. A quiet place for notes and things worth remembering.">
   <meta name="theme-color" content="#161616">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,46 +18,45 @@
     <aside id="side"></aside>
     <main id="content">
       <div class="col">
-        <div class="metabar"><span>Est. <span id="est"></span></span></div>
-
+        <div class="metabar">Est. <span id="est"></span></div>
         <div class="intro">
           <h1>Hi, I'm Akshay.</h1>
-          <p class="lede">I'm a co-founder at Record, where we're building a trust layer for skills with my co-founder Tharun. I own product and recruiter sales. This site is where I think in public: decisions, unfinished work, and things worth keeping.</p>
+          <p class="lede">Co-founder at Record. This is a quiet place where I keep my notes and the things worth remembering.</p>
           <p class="hint" id="copy-email" hidden>Press <kbd>C</kbd> <span data-msg>to copy my email</span></p>
         </div>
 
-
-        <section aria-labelledby="h-now">
-          <div class="sec-head"><h2 id="h-now">Right now</h2></div>
-          <dl class="nowrows" id="nowrows"></dl>
-          <div class="more"><a href="about/">More about me</a></div>
+        <section aria-labelledby="h-notes">
+          <div class="sec-head"><h2 id="h-notes">Notes</h2></div>
+          <div class="demo"><b>DEMO</b><span>Placeholders. Replace them in assets/data.js.</span></div>
+          <ul class="idx" id="idx"></ul>
+          <div class="more"><a href="notes/">All notes</a></div>
         </section>
 
-        <section aria-labelledby="h-idx">
-          <div class="sec-head"><h2 id="h-idx">Writing and notes</h2></div>
-          <div class="demo"><b>DEMO</b><span>These entries are placeholders. Replace them in assets/data.js.</span></div>
-          <ul class="idx" id="idx"></ul>
-          <div class="more"><a href="thoughts/">Thoughts</a><a href="resources/">Resources</a><a href="memories/">Memories</a><a href="experiments/">Experiments</a><button type="button" data-random>Random entry</button></div>
+        <section aria-labelledby="h-faith">
+          <div class="sec-head"><h2 id="h-faith">Faith</h2></div>
+          <p class="prose">Following Christ Jesus.</p>
+          <div class="more"><a href="faith/">My faith and my notes</a></div>
         </section>
 
         <section aria-labelledby="h-habits">
           <div class="sec-head"><h2 id="h-habits">Habits</h2></div>
-          <p class="prose">My habit tracker, kept in public.</p>
           <div class="embedwrap" id="embedwrap">
             <iframe class="embed" id="habits" title="My habit tracker" src="https://mycommits.lovable.app/embed/2cdbb28a-0509-4a80-8f61-c5d0fcb9b7f9?type=quarterly" width="100%" height="450" frameborder="0" scrolling="no" loading="lazy" style="border-radius: 16px; background: #0a0b0f;"></iframe>
           </div>
         </section>
       </div>
-      <footer class="foot"><span>© <span id="year"></span> Akshay · <span class="updated">Last updated <span id="upd"></span></span></span><button id="top" type="button">Scroll to top ↑</button></footer>
+      <footer class="foot"><span>© <span id="year"></span> Akshay</span><button id="top" type="button">Top ↑</button></footer>
     </main>
   </div>
   <script src="assets/data.js"></script>
   <script src="assets/site.js"></script>
   <script>
     var byDate = function (a, b) { return b.date.localeCompare(a.date); };
+    function line(e) {
+      return '<li><a href="entry/?id=' + encodeURIComponent(e.id) + '"><time datetime="' + esc(e.date) + '">' + fmtDate(e.date) + "</time><span>" + esc(e.title) + "</span><em>" + esc(KINDS[e.kind]) + "</em></a></li>";
+    }
     document.getElementById("est").textContent = SITE.since;
-    document.getElementById("upd").textContent = fmtDate(SITE.updated);
-
+    document.getElementById("idx").innerHTML = ENTRIES.filter(function (e) { return e.kind !== "faith"; }).sort(byDate).slice(0, 5).map(line).join("");
 
     // Habit tracker: always show the full chart with no inner scroll.
     // Below 720px the tracker stacks its months and gets very tall, so keep its wide layout and scale it down.
@@ -74,22 +71,6 @@
       }
       fit(); addEventListener("resize", fit);
     })();
-
-    // Right now: focus, what is running, what I'm learning.
-    (function () {
-      var running = ENTRIES.filter(function (e) { return e.kind === "experiment" && e.tag === "Running"; }).sort(byDate)[0];
-      var rows = [["Focus", NOW.focus[0] && NOW.focus[0].title, "about/"],
-                  ["Running", running && running.title, running && "entry/?id=" + encodeURIComponent(running.id)],
-                  ["Learning", NOW.learning[0], "about/"]].filter(function (r) { return r[1]; });
-      document.getElementById("nowrows").innerHTML = rows.map(function (r) {
-        return "<div><dt>" + r[0] + '</dt><dd><a href="' + r[2] + '">' + esc(r[1]) + "</a></dd></div>";
-      }).join("");
-    })();
-
-    // Index of everything, newest first.
-    document.getElementById("idx").innerHTML = ENTRIES.slice().sort(byDate).slice(0, 8).map(function (e) {
-      return '<li><a href="entry/?id=' + encodeURIComponent(e.id) + '"><time datetime="' + esc(e.date) + '">' + fmtDay(e.date) + "</time><span>" + esc(e.title) + "</span><em>" + esc(KINDS[e.kind]) + "</em></a></li>";
-    }).join("");
   </script>
 </body>
 </html>

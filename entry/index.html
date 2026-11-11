@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Entry | Akshay</title>
+  <title>Note | Akshay</title>
   <meta name="description" content="">
   <meta name="theme-color" content="#161616">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,17 +12,16 @@
   <script>try{var t=localStorage.getItem("theme");if(!t)t="dark";document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
   <link rel="stylesheet" href="../assets/site.css">
 </head>
-<body data-page="start" data-root="../">
+<body data-page="notes" data-root="../">
   <a class="skip" href="#content">Skip to content</a>
   <div class="shell">
     <aside id="side"></aside>
     <main id="content">
       <div class="col entry">
-        <div class="hero" id="entry"></div>
-        <div class="more" id="tools" hidden><button type="button" id="copylink">Copy link</button><button type="button" data-random>Random entry</button></div>
-        <a class="back" id="back" href="../">← Back</a>
+        <div id="entry"></div>
+        <a class="back" id="back" href="../notes/">← All notes</a>
       </div>
-      <footer class="foot"><span>© <span id="year"></span> Akshay</span><button id="top" type="button">Scroll to top ↑</button></footer>
+      <footer class="foot"><span>© <span id="year"></span> Akshay</span><button id="top" type="button">Top ↑</button></footer>
     </main>
   </div>
   <script src="../assets/data.js"></script>
@@ -30,26 +29,20 @@
     // Highlight the right menu item before the sidebar is built.
     var id = new URLSearchParams(location.search).get("id");
     var e = ENTRIES.filter(function (x) { return x.id === id; })[0];
-    if (e) document.body.setAttribute("data-page", {thought:"thoughts",resource:"resources",memory:"memories",experiment:"experiments"}[e.kind]);
+    if (e && e.kind === "faith") document.body.setAttribute("data-page", "faith");
   </script>
   <script src="../assets/site.js"></script>
   <script>
     var out = document.getElementById("entry");
     if (!e) {
       document.title = "Not found | Akshay";
-      out.innerHTML = '<p class="eyebrow">404</p><h1>That entry <em>doesn\'t exist.</em></h1>';
+      out.innerHTML = '<h1>That note doesn\'t exist.</h1>';
     } else {
       document.title = e.title + " | Akshay";
-      out.innerHTML = '<p class="eyebrow">' + esc(KINDS[e.kind]) + " · " + esc(e.tag) + "</p><h1>" + esc(e.title) + "</h1>" +
-        '<div class="meta"><time datetime="' + esc(e.date) + '">' + fmtDate(e.date) + "</time><span>·</span><span>" + e.read + ' min read</span></div>' +
-        (e.hypothesis ? '<div class="case" style="margin-bottom:24px"><dl><dt>Hypothesis</dt><dd>' + esc(e.hypothesis) + "</dd><dt>Status</dt><dd>" + esc(e.tag) + "</dd><dt>Result</dt><dd>" + esc(e.result || "") + "</dd></dl></div>" : "") +
-        '<div class="entry-body">' + e.body.map(function (p) { return "<p>" + esc(p) + "</p>"; }).join("") + "</div>";
-      document.getElementById("tools").hidden = false;
       var back = document.getElementById("back");
-      back.href = "../" + SECTION[e.kind]; back.textContent = "← All " + {thought:"thoughts",resource:"resources",memory:"memories",experiment:"experiments"}[e.kind];
-      document.getElementById("copylink").addEventListener("click", function () {
-        var b = this; navigator.clipboard.writeText(location.href).then(function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy link"; }, 1500); });
-      });
+      back.href = "../" + SECTION[e.kind]; back.textContent = e.kind === "faith" ? "← Faith" : "← All notes";
+      out.innerHTML = '<h1>' + esc(e.title) + '</h1><div class="meta"><time datetime="' + esc(e.date) + '">' + fmtDate(e.date) + "</time><span>·</span><span>" + esc(KINDS[e.kind]) + "</span></div>" +
+        '<div class="entry-body">' + e.body.map(function (p) { return "<p>" + esc(p) + "</p>"; }).join("") + "</div>";
     }
   </script>
 </body>
