@@ -20,7 +20,7 @@
     <aside id="side"></aside>
     <main id="content">
       <div class="col">
-        <div class="metabar">Est. <span id="est"></span></div>
+        <div class="metabar"><span>Est. <span id="est"></span></span><span id="daysleft" title="Days until my 60th birthday"></span></div>
         <div class="hero">
           <h1>Building in the open.<br>Deciding in public, <em>through focus, constraints, and execution.</em></h1>
           <p class="lede">I document decisions, unfinished work, and thinking in public as evidence. This site evolves with time.</p>
@@ -59,6 +59,12 @@
   <script>
     var byDate = function (a, b) { return b.date.localeCompare(a.date); };
     document.getElementById("est").textContent = SITE.since;
+    (function () {
+      var b = SITE.born.split("-").map(Number), end = Date.UTC(b[0] + SITE.horizonAge, b[1] - 1, b[2]);
+      var now = new Date(), today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+      var d = Math.max(0, Math.round((end - today) / 864e5));
+      document.getElementById("daysleft").textContent = d.toLocaleString("en-IN") + " days to " + SITE.horizonAge;
+    })();
     document.getElementById("upd").textContent = fmtDate(SITE.updated);
     document.getElementById("focus").innerHTML = NOW.focus.map(function (f) {
       return '<div class="tile"><h3>' + esc(f.title) + "</h3><p>" + esc(f.note) + '</p><div class="bar" role="img" aria-label="' + f.pct + ' percent"><i style="width:' + f.pct + '%"></i></div><span class="pct">' + f.pct + "%</span></div>";

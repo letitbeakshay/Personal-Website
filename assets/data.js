@@ -62,6 +62,7 @@ window.NOW = {
 
 /* Site-wide settings. Fill in email to enable the "Press C to copy my email" shortcut. */
 window.SITE = {
+  born: "2002-05-31", horizonAge: 60, // drives the "days left" counter on the home page
   since: 2002, // shown as "Est. 2002" at the top of the home page
   updated: "2026-11-10",
   email: "",   // e.g. "you@example.com". Enables the Copy email button and the "Press C" shortcut.

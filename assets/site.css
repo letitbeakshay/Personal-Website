@@ -226,3 +226,4 @@ kbd { font:500 12px var(--mono); border:1px solid var(--line-2); border-bottom-w
 
 .metabar { padding-top:28px; font:400 12px var(--mono); letter-spacing:.06em; text-transform:uppercase; color:var(--faint); }
 .metabar + .hero { padding-top:44px; }
+.metabar { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
