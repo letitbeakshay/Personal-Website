@@ -28,15 +28,17 @@
           <p class="hint" id="copy-email" hidden>Press <kbd>C</kbd> <span data-msg>to copy my email</span></p>
         </div>
 
-        <figure class="life" aria-labelledby="life-cap">
-          <div class="dots" id="dots" aria-hidden="true"></div>
-          <figcaption id="life-cap"></figcaption>
-        </figure>
 
         <section aria-labelledby="h-now">
           <div class="sec-head"><h2 id="h-now">Right now</h2></div>
           <dl class="nowrows" id="nowrows"></dl>
           <div class="more"><a href="about/">More about me</a></div>
+        </section>
+
+        <section aria-labelledby="h-habits">
+          <div class="sec-head"><h2 id="h-habits">Habits</h2></div>
+          <p class="prose">My habit tracker, kept in public.</p>
+          <iframe class="embed" title="My habit tracker" src="https://mycommits.lovable.app/embed/2cdbb28a-0509-4a80-8f61-c5d0fcb9b7f9?type=quarterly" width="100%" height="320" frameborder="0" loading="lazy" style="border-radius: 16px; background: #0a0b0f;"></iframe>
         </section>
 
         <section aria-labelledby="h-idx">
@@ -56,22 +58,6 @@
     document.getElementById("est").textContent = SITE.since;
     document.getElementById("upd").textContent = fmtDate(SITE.updated);
 
-    // Your years, as dots: one per year, up to the horizon age.
-    (function () {
-      var b = SITE.born.split("-").map(Number), H = SITE.horizonAge;
-      var now = new Date(), today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
-      var end = Date.UTC(b[0] + H, b[1] - 1, b[2]), start = Date.UTC(b[0], b[1] - 1, b[2]);
-      var daysLeft = Math.max(0, Math.round((end - today) / 864e5));
-      var lived = Math.min(H, (today - start) / (365.25 * 864e5));
-      var full = Math.floor(lived), part = lived - full, html = "";
-      for (var i = 0; i < H; i++) {
-        var cls = i < full ? "on" : "";
-        var style = (i === full && part > 0) ? ' style="--p:' + Math.round(part * 100) + '%"' : "";
-        html += '<i class="' + (style ? "now" : cls) + '"' + style + "></i>";
-      }
-      document.getElementById("dots").innerHTML = html;
-      document.getElementById("life-cap").textContent = "Year " + (full + 1) + " of " + H + ". " + daysLeft.toLocaleString("en-IN") + " days to go.";
-    })();
 
     // Right now: focus, what is running, what I'm learning.
     (function () {
