@@ -25,26 +25,26 @@
     </main>
   </div>
   <script src="../assets/data.js"></script>
-  <script>
-    // Highlight the right menu item before the sidebar is built.
-    var id = new URLSearchParams(location.search).get("id");
-    var e = ENTRIES.filter(function (x) { return x.id === id; })[0];
-    if (e && (e.kind === "faith" || e.kind === "experiment")) document.body.setAttribute("data-page", e.kind === "faith" ? "faith" : "experiments");
-  </script>
+  <script src="../assets/config.js"></script>
   <script src="../assets/site.js"></script>
   <script>
-    var out = document.getElementById("entry");
-    if (!e) {
-      document.title = "Not found | Akshay";
-      out.innerHTML = '<h1>That note doesn\'t exist.</h1>';
-    } else {
+    whenData(function () {
+      var id = new URLSearchParams(location.search).get("id");
+      var e = ENTRIES.filter(function (x) { return x.id === id; })[0];
+      var out = document.getElementById("entry");
+      if (!e) {
+        document.title = "Not found | Akshay";
+        out.innerHTML = '<h1>That note doesn\'t exist.</h1>';
+        return;
+      }
+      setPage(e.kind === "faith" ? "faith" : e.kind === "experiment" ? "experiments" : "notes");
       document.title = e.title + " | Akshay";
       var back = document.getElementById("back");
       back.href = "../" + SECTION[e.kind]; back.textContent = e.kind === "faith" ? "← Faith" : e.kind === "experiment" ? "← All experiments" : "← All notes";
-      out.innerHTML = '<h1>' + esc(e.title) + '</h1><div class="meta"><time datetime="' + esc(e.date) + '">' + fmtDate(e.date) + "</time><span>·</span><span>" + esc(e.kind === "experiment" ? e.tag : KINDS[e.kind]) + "</span></div>" +
+      out.innerHTML = '<h1>' + esc(e.title) + '</h1><div class="meta"><time datetime="' + esc(e.date) + '">' + fmtDate(e.date) + "</time><span>·</span><span>" + esc(e.kind === "experiment" ? (e.tag || "Experiment") : KINDS[e.kind]) + "</span></div>" +
         (e.hypothesis ? '<div class="case" style="margin-bottom:22px"><dl><dt>Hypothesis</dt><dd>' + esc(e.hypothesis) + "</dd><dt>Result</dt><dd>" + esc(e.result || "") + "</dd></dl></div>" : "") +
         '<div class="entry-body">' + e.body.map(function (p) { return "<p>" + esc(p) + "</p>"; }).join("") + "</div>";
-    }
+    });
   </script>
 </body>
 </html>

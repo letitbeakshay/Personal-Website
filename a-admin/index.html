@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#161616">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400..600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>try{var t=localStorage.getItem("theme");if(!t)t="dark";document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+  <link rel="stylesheet" href="../assets/site.css">
+  <style>
+    body { min-height:100vh; }
+    .wrap { max-width:820px; margin:0 auto; padding:40px 20px 80px; }
+    .top { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:28px; }
+    .top h1 { margin:0; font-size:28px; }
+    .top .right { display:flex; gap:8px; }
+    .gate { min-height:100vh; display:grid; place-items:center; padding:20px; }
+    .gate form { width:100%; max-width:340px; display:grid; gap:14px; }
+    .gate h1 { margin:0 0 4px; font-size:30px; }
+    .gate p { margin:0; color:var(--muted); }
+    .tabs { display:flex; gap:6px; margin-bottom:22px; border-bottom:1px solid var(--line); }
+    .tab { background:none; border:0; border-bottom:2px solid transparent; padding:10px 14px; color:var(--muted); font:500 14.5px var(--sans); cursor:pointer; margin-bottom:-1px; }
+    .tab[aria-selected="true"] { color:var(--fg); border-color:var(--accent); }
+    .bar2 { display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+    .bar2 select, .bar2 input { flex:1; min-width:140px; }
+    select, .f input, .f textarea, .f select { width:100%; padding:10px 12px; border:1px solid var(--line-2); border-radius:9px; background:var(--panel); color:var(--fg); font:inherit; }
+    .f { display:grid; gap:14px; }
+    .f label { font:500 13px var(--sans); color:var(--muted); display:block; margin-bottom:5px; }
+    .f textarea { min-height:90px; resize:vertical; line-height:1.55; }
+    .f textarea.tall { min-height:240px; }
+    .two { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .list { list-style:none; margin:0; padding:0; border-top:1px solid var(--line); display:block; }
+    .item { display:grid; grid-template-columns:96px 1fr auto auto; gap:12px; align-items:center; padding:11px 4px; border-bottom:1px solid var(--line); }
+    .item time { font:400 12.5px var(--mono); color:var(--faint); }
+    .item b { font-weight:500; }
+    .item .k { font-size:12.5px; color:var(--muted); background:var(--panel-2); border-radius:6px; padding:2px 9px; }
+    .mini { padding:5px 11px; font-size:13px; border-radius:7px; }
+    .danger:hover { border-color:#e5484d; color:#e5484d; }
+    .msg { min-height:1.4em; font-size:14px; margin-top:12px; color:var(--muted); }
+    .msg.err { color:#e5484d; }
+    .msg.ok { color:var(--ok); }
+    .note { font-size:13.5px; color:var(--faint); margin:0 0 14px; }
+    .editor { border:1px solid var(--line); border-radius:12px; padding:20px; background:var(--panel); margin-bottom:22px; }
+    .editor h2 { margin:0 0 16px; font:600 16px var(--sans); }
+    [hidden] { display:none !important; }
+    @media (max-width:640px) { .two { grid-template-columns:1fr; } .item { grid-template-columns:1fr auto auto; } .item time { grid-column:1/-1; } }
+  </style>
+</head>
+<body>
+
+  <!-- Security page -->
+  <section class="gate" id="gate">
+    <form id="loginform" autocomplete="off">
+      <div>
+        <h1>Admin</h1>
+        <p>Enter your password to continue.</p>
+      </div>
+      <div class="field">
+        <label for="pw" class="sr" style="position:absolute;left:-9999px">Password</label>
+        <input id="pw" name="pw" type="password" placeholder="Password" required autocomplete="current-password" autofocus
+               style="width:100%;padding:11px 13px;border:1px solid var(--line-2);border-radius:9px;background:var(--panel);color:var(--fg);font:inherit">
+      </div>
+      <button class="btn primary" type="submit" id="loginbtn" style="justify-content:center">Open</button>
+      <div class="msg" id="loginmsg" role="status"></div>
+      <noscript><div class="msg err">JavaScript is required.</div></noscript>
+    </form>
+  </section>
+
+  <!-- Admin panel -->
+  <main class="wrap" id="panel" hidden>
+    <div class="top">
+      <h1>Admin</h1>
+      <div class="right">
+        <a class="btn ghost mini" href="../" target="_blank" rel="noopener">View site</a>
+        <button class="btn ghost mini" id="signout" type="button">Sign out</button>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="entries" aria-selected="true">Entries</button>
+      <button class="tab" role="tab" data-tab="pages" aria-selected="false">Page text</button>
+      <button class="tab" role="tab" data-tab="settings" aria-selected="false">Contact</button>
+    </div>
+
+    <!-- Entries -->
+    <section id="tab-entries">
+      <div class="editor" id="editor" hidden>
+        <h2 id="edtitle">New entry</h2>
+        <form class="f" id="entryform">
+          <div class="two">
+            <div><label for="f-kind">Type</label>
+              <select id="f-kind">
+                <option value="thought">Note: Thought</option>
+                <option value="resource">Note: Resource</option>
+                <option value="memory">Note: Memory</option>
+                <option value="faith">Faith note</option>
+                <option value="experiment">Experiment</option>
+              </select></div>
+            <div><label for="f-date">Date</label><input id="f-date" type="date" required></div>
+          </div>
+          <div><label for="f-title">Title</label><input id="f-title" required maxlength="200"></div>
+          <div><label for="f-summary">One-line summary</label><input id="f-summary" maxlength="400"></div>
+          <div id="exp-fields" class="f" hidden>
+            <div><label for="f-tag">Status</label>
+              <select id="f-tag"><option>Running</option><option>Learned</option><option>Shelved</option></select></div>
+            <div><label for="f-hyp">Hypothesis</label><textarea id="f-hyp"></textarea></div>
+            <div><label for="f-res">Result so far</label><textarea id="f-res"></textarea></div>
+          </div>
+          <div><label for="f-body">Text (leave a blank line between paragraphs)</label><textarea id="f-body" class="tall"></textarea></div>
+          <div class="actions">
+            <button class="btn primary" type="submit">Save</button>
+            <button class="btn ghost" type="button" id="cancel">Cancel</button>
+          </div>
+          <div class="msg" id="entrymsg" role="status"></div>
+        </form>
+      </div>
+
+      <div class="bar2">
+        <input class="search" id="filter" type="search" placeholder="Search entries" aria-label="Search entries">
+        <select id="kindfilter" aria-label="Filter by type">
+          <option value="all">All types</option>
+          <option value="thought">Thought</option><option value="resource">Resource</option><option value="memory">Memory</option>
+          <option value="faith">Faith note</option><option value="experiment">Experiment</option>
+        </select>
+        <button class="btn primary" id="newbtn" type="button">New entry</button>
+      </div>
+      <ul class="list" id="entrylist"></ul>
+      <div class="msg" id="listmsg" role="status"></div>
+    </section>
+
+    <!-- Page text -->
+    <section id="tab-pages" hidden>
+      <form class="f" id="pagesform">
+        <p class="note">Leave a box empty to use the default (Home) or to hide the text (About, Faith).</p>
+        <div><label for="p-home">Home: intro line</label><textarea id="p-home"></textarea></div>
+        <div><label for="p-about">About page (blank line between paragraphs)</label><textarea id="p-about" class="tall"></textarea></div>
+        <div><label for="p-faith">Faith page: your words (blank line between paragraphs)</label><textarea id="p-faith" class="tall"></textarea></div>
+        <div class="actions"><button class="btn primary" type="submit">Save page text</button></div>
+        <div class="msg" id="pagesmsg" role="status"></div>
+      </form>
+    </section>
+
+    <!-- Contact -->
+    <section id="tab-settings" hidden>
+      <form class="f" id="settingsform">
+        <p class="note">Shown on the Let's talk page. Social links with no URL are hidden.</p>
+        <div><label for="s-email">Email address</label><input id="s-email" type="email"></div>
+        <div id="socials" class="f"></div>
+        <div class="actions"><button class="btn primary" type="submit">Save contact</button></div>
+        <div class="msg" id="settingsmsg" role="status"></div>
+      </form>
+    </section>
+  </main>
+
+  <script src="../assets/config.js"></script>
+  <script>setTimeout(function () { var m = document.getElementById("loginmsg"); if (m && !window.__adminReady) { m.textContent = "Still loading. If this stays, check your connection and refresh."; } }, 6000);</script>
+  <script type="module">
+    window.__adminReady = true;
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm";
+    const C = window.CONFIG;
+    const sb = createClient(C.SUPABASE_URL, C.SUPABASE_KEY);
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const KIND = { thought: "Thought", resource: "Resource", memory: "Memory", faith: "Faith note", experiment: "Experiment" };
+    const say = (el, text, cls) => { el.textContent = text; el.className = "msg" + (cls ? " " + cls : ""); };
+    const explain = (err) => /relation .* does not exist|42P01|schema cache/i.test(err.message || err.code || "")
+      ? "The database tables are missing. Run supabase.sql in the Supabase SQL Editor first."
+      : /row-level security|42501|permission/i.test(err.message || err.code || "")
+        ? "Not allowed. Check that YOUR_EMAIL in supabase.sql matches the admin email."
+        : (err.message || "Something went wrong.");
+
+    let rows = [], editing = null;
+
+    // ---------- Security page
+    let fails = 0, lockUntil = 0;
+    async function showFor(session) {
+      $("gate").hidden = !!session; $("panel").hidden = !session;
+      if (session) { loadEntries(); loadContent(); }
+      else setTimeout(() => $("pw").focus(), 50);
+    }
+    $("loginform").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msg = $("loginmsg");
+      if (!C.ADMIN_EMAIL) { say(msg, "Setup needed: set ADMIN_EMAIL in assets/config.js.", "err"); return; }
+      if (Date.now() < lockUntil) { say(msg, "Too many tries. Wait a moment.", "err"); return; }
+      $("loginbtn").disabled = true; say(msg, "Checking…");
+      const { data, error } = await sb.auth.signInWithPassword({ email: C.ADMIN_EMAIL, password: $("pw").value });
+      $("loginbtn").disabled = false;
+      if (error || !data.session) {
+        fails++; if (fails >= 5) { lockUntil = Date.now() + 30000; fails = 0; }
+        say(msg, "That is not the right password.", "err"); $("pw").select(); return;
+      }
+      $("pw").value = ""; say(msg, ""); showFor(data.session);
+    });
+    $("signout").addEventListener("click", async () => { await sb.auth.signOut(); rows = []; showFor(null); });
+    sb.auth.getSession().then(({ data }) => showFor(data.session));
+
+    // ---------- Tabs
+    document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach((x) => x.setAttribute("aria-selected", x === t));
+      ["entries", "pages", "settings"].forEach((n) => { $("tab-" + n).hidden = n !== t.dataset.tab; });
+    }));
+
+    // ---------- Entries
+    async function loadEntries() {
+      const { data, error } = await sb.from("entries").select("*").order("date", { ascending: false });
+      if (error) { say($("listmsg"), explain(error), "err"); return; }
+      rows = data; say($("listmsg"), ""); renderList();
+    }
+    function renderList() {
+      const q = $("filter").value.trim().toLowerCase(), k = $("kindfilter").value;
+      const list = rows.filter((r) => (k === "all" || r.kind === k) && (r.title + " " + r.summary + " " + r.body).toLowerCase().includes(q));
+      $("entrylist").innerHTML = list.length ? list.map((r) =>
+        `<li class="item"><time>${esc(String(r.date).slice(0, 10))}</time><b>${esc(r.title)}</b><span class="k">${esc(KIND[r.kind] || r.kind)}</span>
+         <span><button class="btn ghost mini" data-edit="${esc(r.id)}" type="button">Edit</button> <button class="btn ghost mini danger" data-del="${esc(r.id)}" type="button">Delete</button></span></li>`
+      ).join("") : '<li class="item" style="grid-template-columns:1fr;color:var(--muted)">No entries yet. Press "New entry".</li>';
+    }
+    $("filter").addEventListener("input", renderList);
+    $("kindfilter").addEventListener("change", renderList);
+    $("entrylist").addEventListener("click", async (e) => {
+      const ed = e.target.closest("[data-edit]"), dl = e.target.closest("[data-del]");
+      if (ed) openEditor(rows.find((r) => r.id === ed.dataset.edit));
+      if (dl) {
+        const r = rows.find((x) => x.id === dl.dataset.del);
+        if (!confirm('Delete "' + r.title + '"? This cannot be undone.')) return;
+        const { error } = await sb.from("entries").delete().eq("id", r.id);
+        if (error) say($("listmsg"), explain(error), "err"); else { say($("listmsg"), "Deleted.", "ok"); loadEntries(); }
+      }
+    });
+
+    function syncKind() { $("exp-fields").hidden = $("f-kind").value !== "experiment"; }
+    $("f-kind").addEventListener("change", syncKind);
+    function openEditor(r) {
+      editing = r ? r.id : null;
+      $("edtitle").textContent = r ? "Edit entry" : "New entry";
+      $("f-kind").value = r ? r.kind : "thought";
+      $("f-date").value = r ? String(r.date).slice(0, 10) : new Date().toISOString().slice(0, 10);
+      $("f-title").value = r ? r.title : ""; $("f-summary").value = r ? r.summary : "";
+      $("f-body").value = r ? r.body : "";
+      $("f-tag").value = r && r.kind === "experiment" && r.tag ? r.tag : "Running";
+      $("f-hyp").value = r ? r.hypothesis : ""; $("f-res").value = r ? r.result : "";
+      say($("entrymsg"), ""); syncKind();
+      $("editor").hidden = false; $("editor").scrollIntoView({ behavior: "smooth", block: "start" }); $("f-title").focus();
+    }
+    $("newbtn").addEventListener("click", () => openEditor(null));
+    $("cancel").addEventListener("click", () => { $("editor").hidden = true; });
+    const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 50) || "entry";
+    $("entryform").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const kind = $("f-kind").value, isExp = kind === "experiment";
+      const row = {
+        id: editing || slug($("f-title").value) + "-" + Date.now().toString(36).slice(-4),
+        kind, tag: isExp ? $("f-tag").value : "", date: $("f-date").value,
+        title: $("f-title").value.trim(), summary: $("f-summary").value.trim(), body: $("f-body").value.trim(),
+        hypothesis: isExp ? $("f-hyp").value.trim() : "", result: isExp ? $("f-res").value.trim() : ""
+      };
+      say($("entrymsg"), "Saving…");
+      const { error } = await sb.from("entries").upsert(row);
+      if (error) { say($("entrymsg"), explain(error), "err"); return; }
+      say($("entrymsg"), "Saved.", "ok"); await loadEntries(); setTimeout(() => { $("editor").hidden = true; }, 500);
+    });
+
+    // ---------- Page text + contact
+    const SOC = ["LinkedIn", "X", "Instagram"];
+    function socialRows(list) {
+      $("socials").innerHTML = SOC.map((n, i) => {
+        const s = (list || []).find((x) => x.name === n) || {};
+        return `<div class="two"><div><label for="soc-h${i}">${n} handle</label><input id="soc-h${i}" value="${esc(s.handle || "")}" placeholder="@name"></div>
+                <div><label for="soc-u${i}">${n} link</label><input id="soc-u${i}" type="url" value="${esc(s.url || "")}" placeholder="https://"></div></div>`;
+      }).join("");
+    }
+    async function loadContent() {
+      const { data, error } = await sb.from("content").select("*");
+      if (error) { say($("pagesmsg"), explain(error), "err"); socialRows([]); return; }
+      const c = {}; data.forEach((r) => { c[r.key] = r.value; });
+      $("p-home").value = c.home_intro || ""; $("p-about").value = c.about || ""; $("p-faith").value = c.faith_intro || "";
+      $("s-email").value = (c.site && c.site.email) || ""; socialRows(c.site && c.site.socials);
+    }
+    async function saveKeys(list, msgEl) {
+      say(msgEl, "Saving…");
+      const { error } = await sb.from("content").upsert(list.map(([key, value]) => ({ key, value, updated_at: new Date().toISOString() })));
+      if (error) say(msgEl, explain(error), "err"); else say(msgEl, "Saved. The site shows it right away.", "ok");
+    }
+    $("pagesform").addEventListener("submit", (e) => {
+      e.preventDefault();
+      saveKeys([["home_intro", $("p-home").value.trim()], ["about", $("p-about").value.trim()], ["faith_intro", $("p-faith").value.trim()]], $("pagesmsg"));
+    });
+    $("settingsform").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const socials = SOC.map((n, i) => ({ name: n, handle: $("soc-h" + i).value.trim(), url: $("soc-u" + i).value.trim() }));
+      saveKeys([["site", { email: $("s-email").value.trim(), socials }]], $("settingsmsg"));
+    });
+  </script>
+</body>
+</html>

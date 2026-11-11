@@ -23,8 +23,57 @@
     return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
   };
 
+
+  // ---- Data: entries and page text come from Supabase. If that fails, the built-in placeholders in data.js stay in place.
+  window.LIVE = false;
+  function mapRow(r) {
+    var body = String(r.body || "").split(/\n\s*\n/).map(function (x) { return x.trim(); }).filter(Boolean);
+    var words = body.join(" ").split(/\s+/).filter(Boolean).length;
+    return { id: r.id, kind: r.kind, tag: r.tag || "", date: String(r.date).slice(0, 10), title: r.title, summary: r.summary || "",
+             body: body, read: Math.max(1, Math.ceil(words / 200)), hypothesis: r.hypothesis || "", result: r.result || "" };
+  }
+  window.DATA_READY = new Promise(function (resolve) {
+    var C = window.CONFIG;
+    if (!C || !C.SUPABASE_URL) { resolve(); return; }
+    var ctl = new AbortController(), timer = setTimeout(function () { ctl.abort(); }, 7000);
+    var get = function (t, q) {
+      return fetch(C.SUPABASE_URL + "/rest/v1/" + t + "?" + q, { headers: { apikey: C.SUPABASE_KEY }, signal: ctl.signal })
+        .then(function (r) { if (!r.ok) throw new Error(t); return r.json(); });
+    };
+    Promise.all([get("entries", "select=*&order=date.desc"), get("content", "select=*")]).then(function (res) {
+      window.ENTRIES = res[0].map(mapRow);
+      window.CONTENT = {}; res[1].forEach(function (r) { window.CONTENT[r.key] = r.value; });
+      var site = window.CONTENT.site;
+      if (site && window.SITE) {
+        if (typeof site.email === "string") SITE.email = site.email;
+        if (Array.isArray(site.socials)) SITE.socials = site.socials;
+      }
+      window.LIVE = true;
+    }).catch(function () {}).then(function () { clearTimeout(timer); resolve(); });
+  });
+  window.whenData = function (cb) { window.DATA_READY.then(cb); };
+
+  // Page text from the admin panel. Elements with data-content="key" are filled in; unused placeholders are removed once live.
+  whenData(function () {
+    if (!window.LIVE) return;
+    document.querySelectorAll(".demo").forEach(function (el) { el.remove(); });
+    document.querySelectorAll("[data-content]").forEach(function (el) {
+      var v = (window.CONTENT || {})[el.getAttribute("data-content")];
+      if (typeof v === "string" && v.trim()) {
+        if (el.hasAttribute("data-paras")) {
+          el.innerHTML = v.split(/\n\s*\n/).map(function (t) { return '<p class="prose">' + esc(t.trim()).replace(/\n/g, "<br>") + "</p>"; }).join("");
+        } else { el.textContent = v.trim(); }
+      } else if (el.hasAttribute("data-ph")) { el.remove(); }
+    });
+  });
+
+  window.setPage = function (id) {
+    document.querySelectorAll("nav a[data-p]").forEach(function (a) {
+      if (a.getAttribute("data-p") === id) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+    });
+  };
+
   // Sidebar
-  var E = window.ENTRIES || [];
   var IC = {
     start: '<path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/>',
     about: '<circle cx="12" cy="8" r="3.5"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/>',
@@ -40,7 +89,7 @@
   ];
   var nav = items.map(function (i) {
     var cur = i[0] === page ? ' aria-current="page"' : "";
-    return '<li><a href="' + base + i[1] + '"' + cur + '><svg class="ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + IC[i[0]] + "</svg><span>" + i[2] + "</span></a></li>";
+    return '<li><a href="' + base + i[1] + '" data-p="' + i[0] + '"' + cur + '><svg class="ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + IC[i[0]] + "</svg><span>" + i[2] + "</span></a></li>";
   }).join("");
 
   var aside = document.getElementById("side");
@@ -79,9 +128,9 @@
 
 
   // List page with search and filter chips. opts: filter(entry), label(entry) used for the chips and the right-hand label.
-  window.renderCollection = function (opts) {
+  window.renderCollection = function (opts) { whenData(function () {
     var pick = "all", term = "";
-    var list = E.filter(opts.filter).sort(function (a, b) { return b.date.localeCompare(a.date); });
+    var list = (window.ENTRIES || []).filter(opts.filter).sort(function (a, b) { return b.date.localeCompare(a.date); });
     var labels = []; list.forEach(function (e) { var l = opts.label(e); if (labels.indexOf(l) < 0) labels.push(l); });
     var chips = document.getElementById("chips"), out = document.getElementById("idx");
     chips.innerHTML = ["all"].concat(labels).map(function (l) {
@@ -104,10 +153,11 @@
     });
     document.getElementById("q").addEventListener("input", function () { term = this.value.trim().toLowerCase(); render(); });
     render();
-  };
+  }); };
 
   // Random entry
   window.randomEntryURL = function () {
+    var E = window.ENTRIES || [];
     if (!E.length) return base;
     return base + "entry/?id=" + encodeURIComponent(E[Math.floor(Math.random() * E.length)].id);
   };
@@ -116,9 +166,10 @@
   });
 
 
-  // Press C to copy email (only when an email is configured)
-  var hint = document.getElementById("copy-email");
-  if (hint && window.SITE && SITE.email) {
+  // Press C to copy email (only when an email is set)
+  whenData(function () {
+    var hint = document.getElementById("copy-email");
+    if (!hint || !window.SITE || !SITE.email) return;
     hint.hidden = false;
     document.addEventListener("keydown", function (e) {
       if (e.key.toLowerCase() !== "c" || e.metaKey || e.ctrlKey || e.altKey) return;
@@ -127,5 +178,5 @@
         var k = hint.querySelector("[data-msg]"); if (k) { k.textContent = "copied"; setTimeout(function () { k.textContent = "to copy my email"; }, 1600); }
       });
     });
-  }
+  });
 })();

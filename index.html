@@ -21,7 +21,7 @@
         <div class="metabar">Est. <span id="est"></span></div>
         <div class="intro">
           <h1>Hi, I'm Akshay.</h1>
-          <p class="lede">Co-founder at Record. This is a quiet place where I keep my notes and the things worth remembering.</p>
+          <p class="lede" data-content="home_intro">Co-founder at Record. This is a quiet place where I keep my notes and the things worth remembering.</p>
           <p class="hint" id="copy-email" hidden>Press <kbd>C</kbd> <span data-msg>to copy my email</span></p>
         </div>
 
@@ -43,6 +43,7 @@
     </main>
   </div>
   <script src="assets/data.js"></script>
+  <script src="assets/config.js"></script>
   <script src="assets/site.js"></script>
   <script>
     var byDate = function (a, b) { return b.date.localeCompare(a.date); };
@@ -50,7 +51,9 @@
       return '<li><a href="entry/?id=' + encodeURIComponent(e.id) + '"><time datetime="' + esc(e.date) + '">' + fmtDate(e.date) + "</time><span>" + esc(e.title) + "</span><em>" + esc(KINDS[e.kind]) + "</em></a></li>";
     }
     document.getElementById("est").textContent = SITE.since;
-    document.getElementById("idx").innerHTML = ENTRIES.filter(function (e) { return e.kind !== "faith" && e.kind !== "experiment"; }).sort(byDate).slice(0, 5).map(line).join("");
+    whenData(function () {
+      document.getElementById("idx").innerHTML = ENTRIES.filter(function (e) { return e.kind !== "faith" && e.kind !== "experiment"; }).sort(byDate).slice(0, 5).map(line).join("") || '<li class="empty">Nothing here yet.</li>';
+    });
 
     // Habit tracker: always show the full chart with no inner scroll.
     // Below 720px the tracker stacks its months and gets very tall, so keep its wide layout and scale it down.

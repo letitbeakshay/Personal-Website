@@ -39,25 +39,30 @@
     </main>
   </div>
   <script src="../assets/data.js"></script>
+  <script src="../assets/config.js"></script>
   <script src="../assets/site.js"></script>
   <script>
-    var mail = document.getElementById("mail"), soc = document.getElementById("socials");
-    if (SITE.email) {
-      mail.innerHTML = '<button class="btn primary" id="copy" type="button">Copy email address</button> <a class="btn ghost" href="mailto:' + esc(SITE.email) + '">Open in mail app</a>';
-      document.getElementById("copy").addEventListener("click", function () {
-        var b = this; navigator.clipboard.writeText(SITE.email).then(function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy email address"; }, 1600); });
-      });
-    } else {
-      mail.innerHTML = '<div class="demo"><b>TODO</b><span>Add your email in assets/data.js (SITE.email) to show the Copy email button.</span></div>';
-    }
-    var links = SITE.socials.filter(function (x) { return x.url; });
-    if (links.length) {
-      soc.innerHTML = links.map(function (x) {
-        return '<a class="tile" href="' + esc(x.url) + '" target="_blank" rel="noopener noreferrer"><h3>' + esc(x.name) + " <span>↗</span></h3><p>" + esc(x.handle) + "</p></a>";
-      }).join("");
-    } else {
-      soc.outerHTML = '<div class="demo"><b>TODO</b><span>Add your profiles in assets/data.js (SITE.socials). Only entries with a url are shown.</span></div>';
-    }
+    whenData(function () {
+      var mail = document.getElementById("mail"), soc = document.getElementById("socials");
+      if (SITE.email) {
+        mail.innerHTML = '<button class="btn primary" id="copy" type="button">Copy email address</button> <a class="btn ghost" href="mailto:' + esc(SITE.email) + '">Open in mail app</a>';
+        document.getElementById("copy").addEventListener("click", function () {
+          var b = this; navigator.clipboard.writeText(SITE.email).then(function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy email address"; }, 1600); });
+        });
+      } else if (!LIVE) {
+        mail.innerHTML = '<div class="demo"><b>TODO</b><span>Add your email in the admin panel (Settings).</span></div>';
+      }
+      var links = (SITE.socials || []).filter(function (x) { return x.url; });
+      if (links.length) {
+        soc.innerHTML = links.map(function (x) {
+          return '<a class="tile" href="' + esc(x.url) + '" target="_blank" rel="noopener noreferrer"><h3>' + esc(x.name) + " <span>↗</span></h3><p>" + esc(x.handle || "") + "</p></a>";
+        }).join("");
+      } else if (LIVE) {
+        document.getElementById("h-else").closest("section").remove();
+      } else {
+        soc.outerHTML = '<div class="demo"><b>TODO</b><span>Add your profiles in the admin panel (Settings).</span></div>';
+      }
+    });
   </script>
 </body>
 </html>
