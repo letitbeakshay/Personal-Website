@@ -114,16 +114,6 @@
     el.addEventListener("click", function (e) { e.preventDefault(); location.href = randomEntryURL(); });
   });
 
-  // Live clock in the header line
-  var clock = document.getElementById("clock");
-  if (clock && window.SITE) {
-    var tick = function () {
-      try {
-        clock.textContent = new Date().toLocaleTimeString("en-GB", { timeZone: SITE.tz, hour12: false }) + " " + SITE.tzLabel;
-      } catch (e) { clock.textContent = ""; }
-    };
-    tick(); setInterval(tick, 1000);
-  }
 
   // Press C to copy email (only when an email is configured)
   var hint = document.getElementById("copy-email");
