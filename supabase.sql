@@ -1,4 +1,4 @@
--- Run this ONCE in the Supabase dashboard: SQL Editor -> New query -> paste -> Run.
+-- STATUS: already applied to the Supabase project on 2026-11-11 (with the admin email filled in). Keep this file as a record.-- Run this ONCE in the Supabase dashboard: SQL Editor -> New query -> paste -> Run.
 -- BEFORE running: replace YOUR_EMAIL (appears 4 times below) with the email of your admin user, in lowercase.
 -- Then create that user: Authentication -> Users -> Add user -> your email and your admin password.
 -- Then switch OFF public sign-ups: Authentication -> Sign In / Providers -> "Allow new users to sign up".

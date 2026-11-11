@@ -4,5 +4,5 @@
 window.CONFIG = {
   SUPABASE_URL: "https://lfrruybrnycexlavpofx.supabase.co",
   SUPABASE_KEY: "sb_publishable_gKgQoz4ysK9ORXq6SuGhQQ_NI7sfTI1",
-  ADMIN_EMAIL: ""
+  ADMIN_EMAIL: "toakshayskumar@gmail.com"
 };
