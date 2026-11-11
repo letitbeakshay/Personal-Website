@@ -267,3 +267,9 @@ section { padding:28px 0 4px; margin-top:20px; }
 @media (max-width:860px) { .idx a { grid-template-columns:1fr auto; } .idx time { grid-column:1 / -1; } }
 
 .metabar { justify-content:flex-start; gap:6px; }
+
+/* Sidebar without a name block: menu starts at the top. */
+aside { padding-top:36px; }
+.menu-btn { width:auto; padding:0 12px; font-size:13px; }
+@media (max-width:860px) { aside { padding-top:12px; } }
+.side-foot { justify-content:flex-start; }

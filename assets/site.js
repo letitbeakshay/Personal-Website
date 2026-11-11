@@ -38,12 +38,10 @@
   if (aside) {
     aside.innerHTML =
       '<div class="side-top">' +
-        '<a class="me" href="' + base + '" aria-label="Akshay, home"><div class="avatar" aria-hidden="true">A</div>' +
-        '<div><b>Akshay</b><span>Co-founder, Record</span></div></a>' +
-        '<button class="icon-btn menu-btn" id="menu" aria-label="Toggle menu" aria-expanded="false">☰</button>' +
+        '<button class="icon-btn menu-btn" id="menu" aria-label="Toggle menu" aria-expanded="false">Menu</button>' +
       "</div>" +
       '<div class="groups"><p class="label">Navigate</p><nav aria-label="Primary"><ul>' + nav + "</ul></nav></div>" +
-      '<div class="side-foot"><span>akshay.world</span>' +
+      '<div class="side-foot">' +
       '<button class="icon-btn theme" aria-label="Toggle light and dark theme">◐</button></div>';
 
     document.getElementById("menu").addEventListener("click", function () {
