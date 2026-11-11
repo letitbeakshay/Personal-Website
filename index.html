@@ -35,17 +35,19 @@
           <div class="more"><a href="about/">More about me</a></div>
         </section>
 
-        <section aria-labelledby="h-habits">
-          <div class="sec-head"><h2 id="h-habits">Habits</h2></div>
-          <p class="prose">My habit tracker, kept in public.</p>
-          <iframe class="embed" title="My habit tracker" src="https://mycommits.lovable.app/embed/2cdbb28a-0509-4a80-8f61-c5d0fcb9b7f9?type=quarterly" width="100%" height="320" frameborder="0" loading="lazy" style="border-radius: 16px; background: #0a0b0f;"></iframe>
-        </section>
-
         <section aria-labelledby="h-idx">
           <div class="sec-head"><h2 id="h-idx">Writing and notes</h2></div>
           <div class="demo"><b>DEMO</b><span>These entries are placeholders. Replace them in assets/data.js.</span></div>
           <ul class="idx" id="idx"></ul>
           <div class="more"><a href="thoughts/">Thoughts</a><a href="resources/">Resources</a><a href="memories/">Memories</a><a href="experiments/">Experiments</a><button type="button" data-random>Random entry</button></div>
+        </section>
+
+        <section aria-labelledby="h-habits">
+          <div class="sec-head"><h2 id="h-habits">Habits</h2></div>
+          <p class="prose">My habit tracker, kept in public.</p>
+          <div class="embedwrap" id="embedwrap">
+            <iframe class="embed" id="habits" title="My habit tracker" src="https://mycommits.lovable.app/embed/2cdbb28a-0509-4a80-8f61-c5d0fcb9b7f9?type=quarterly" width="100%" height="450" frameborder="0" scrolling="no" loading="lazy" style="border-radius: 16px; background: #0a0b0f;"></iframe>
+          </div>
         </section>
       </div>
       <footer class="foot"><span>© <span id="year"></span> Akshay · <span class="updated">Last updated <span id="upd"></span></span></span><button id="top" type="button">Scroll to top ↑</button></footer>
@@ -58,6 +60,20 @@
     document.getElementById("est").textContent = SITE.since;
     document.getElementById("upd").textContent = fmtDate(SITE.updated);
 
+
+    // Habit tracker: always show the full chart with no inner scroll.
+    // Below 720px the tracker stacks its months and gets very tall, so keep its wide layout and scale it down.
+    (function () {
+      var wrap = document.getElementById("embedwrap"), f = document.getElementById("habits"), H = 450, W = 720;
+      function fit() {
+        var w = wrap.clientWidth;
+        f.style.height = H + "px";
+        if (w >= W) { f.style.width = "100%"; f.style.transform = "none"; wrap.style.height = H + "px"; return; }
+        var k = w / W;
+        f.style.width = W + "px"; f.style.transform = "scale(" + k + ")"; wrap.style.height = Math.ceil(H * k) + "px";
+      }
+      fit(); addEventListener("resize", fit);
+    })();
 
     // Right now: focus, what is running, what I'm learning.
     (function () {

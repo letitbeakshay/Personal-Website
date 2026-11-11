@@ -245,4 +245,5 @@ kbd { font:500 12px var(--mono); border:1px solid var(--line-2); border-bottom-w
 .idx span { font:500 16px var(--sans); transition:color .15s; }
 .idx em { font:400 13px var(--sans); font-style:normal; color:var(--faint); }
 @media (max-width:860px) { .nowrows > div { grid-template-columns:1fr; gap:2px; } .idx a { grid-template-columns:56px 1fr; } .idx em { display:none; } }
-.embed { display:block; width:100%; border:0; }
+.embedwrap { position:relative; width:100%; overflow:hidden; border-radius:16px; }
+.embed { display:block; width:100%; border:0; transform-origin:0 0; }
