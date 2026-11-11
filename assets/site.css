@@ -279,3 +279,26 @@ aside { padding-top:36px; }
 .entry .meta { margin:0 0 28px; }
 .entry-body { padding-bottom:8px; }
 .entry .back { margin-top:28px; }
+
+/* Menu design: mark, icons, accent bar for the current page, labelled theme toggle. */
+aside { padding:28px 14px 22px; gap:26px; }
+.mark { display:inline-grid; place-items:center; width:32px; height:32px; border-radius:9px; background:var(--panel-2); border:1px solid var(--line); margin-left:6px; }
+.mark i { width:10px; height:10px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 4px var(--tint); transition:transform .2s; }
+.mark:hover i { transform:scale(1.25); }
+nav ul { gap:2px; }
+nav a { position:relative; justify-content:flex-start; gap:12px; padding:9px 12px; border-radius:9px; color:var(--muted); font-size:14.5px; }
+nav a .ico { flex:none; opacity:.85; transition:color .15s, opacity .15s; }
+nav a:hover { color:var(--fg); background:var(--tint); }
+nav a:hover .ico { opacity:1; }
+nav a[aria-current="page"] { color:var(--fg); font-weight:500; background:var(--panel-2); box-shadow:none; }
+nav a[aria-current="page"] .ico { color:var(--accent); opacity:1; }
+nav a[aria-current="page"]::before { content:""; position:absolute; left:-14px; top:9px; bottom:9px; width:3px; border-radius:0 3px 3px 0; background:var(--accent); }
+.side-foot { padding:0 6px; }
+.theme-btn { display:inline-flex; align-items:center; gap:10px; width:100%; padding:9px 12px; border:1px solid var(--line); border-radius:9px; background:transparent; color:var(--muted); font:500 13.5px var(--sans); cursor:pointer; }
+.theme-btn:hover { color:var(--fg); border-color:var(--line-2); }
+.tdot { width:14px; height:14px; border-radius:50%; border:1.5px solid currentColor; background:linear-gradient(90deg, currentColor 50%, transparent 50%); }
+@media (max-width:860px) {
+  aside { padding:12px 16px; gap:10px; }
+  nav a[aria-current="page"]::before { left:-16px; }
+  .mark { margin-left:0; }
+}
