@@ -155,6 +155,18 @@
     }
     @media (max-width:560px) { .fs { display:none; } .topbar { padding:0 8px; gap:2px; } .where { padding:0 10px; } }
     @media (min-width:901px) { .only-m { display:none !important; } }
+    .chead { position:relative; }
+    .trchip { position:absolute; right:0; top:0; height:30px; padding:0 12px; border:1px solid var(--line-2); border-radius:999px; background:transparent; color:var(--muted); font:500 12.5px var(--sans); cursor:pointer; letter-spacing:.04em; }
+    .trchip:hover { color:var(--fg); border-color:var(--fg); }
+    .v.omit { cursor:default; }
+    .v.omit:hover { background:none; }
+    .omitnote { font:italic 400 .8em var(--sans); color:var(--faint); }
+    .trlist { display:grid; gap:8px; margin-top:6px; }
+    .tropt { text-align:left; padding:14px 16px; border-radius:12px; border:1px solid var(--line); background:transparent; color:var(--fg); cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+    .tropt:hover { border-color:var(--line-2); background:var(--panel-2); }
+    .tropt[aria-pressed="true"] { border-color:var(--accent); }
+    .tropt b { font:600 15px var(--sans); } .tropt small { display:block; color:var(--faint); font:400 12.5px var(--sans); margin-top:2px; }
+    .tropt .tick { color:var(--accent); font-size:18px; }
     @media (prefers-reduced-motion:reduce) { * { transition:none !important; animation:none !important; } }
     /* ===== Phone app layout: footer tabs, Search home, My notes page, More ===== */
     .tabbar, .views { display:none; }
@@ -271,7 +283,7 @@
     <div class="app">
       <main class="reader" id="reader">
         <div class="page">
-          <div class="chead"><p class="eyebrow2" id="ceyebrow"></p><h1 id="ctitle"></h1><p id="cmeta"></p></div>
+          <div class="chead"><button class="trchip" id="trchip" type="button" aria-haspopup="dialog" aria-label="Change translation"><span id="trchiptext">MSB</span> <span aria-hidden="true">&#9662;</span></button><p class="eyebrow2" id="ceyebrow"></p><h1 id="ctitle"></h1><p id="cmeta"></p></div>
           <div class="text" id="text" aria-live="polite"></div>
           <button class="nextcard" id="nextcard" type="button"><span><small>Next chapter</small><b id="nextname"></b></span><span aria-hidden="true">→</span></button>
           <div class="pager2"><button class="btn ghost sm" id="prev2">← Previous</button><span></span></div>
@@ -299,6 +311,7 @@
       <ul class="res" id="res"></ul>
     </div>
   </div>
+  <div class="overlay" id="trov" hidden><div class="sheet" id="trsheet" role="dialog" aria-label="Choose a translation"></div></div>
   <div class="overlay" id="libov" hidden><div class="sheet wide" id="libsheet" role="dialog" aria-label="My notes and highlights"></div></div>
   <div class="overlay" id="helpov" hidden>
     <div class="sheet" role="dialog" aria-label="Shortcuts">
@@ -328,8 +341,13 @@
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     const COLORS = { yellow: "#f5c542", green: "#4cc79a", blue: "#5b9dff", pink: "#f06fa8", orange: "#ff7a45" };
     // Translations. To add NKJV later (once licensed), add an entry here with its own data folder or loader.
-    const TR = { kjv: { id: "kjv", short: "KJV", dir: "data/kjv/", credit: "King James Version (1769). Public domain." } };
-    const tr = TR.kjv;
+    // Translations. The Majority Standard Bible is the default; the choice is remembered on this device.
+    const TR = {
+      msb: { id: "msb", short: "MSB", title: "Majority Standard Bible", dir: "data/msb/", sample: "For God so loved the world that He gave His one and only Son.", credit: "Majority Standard Bible (MSB), produced in cooperation with Bible Hub, Discovery Bible, unfoldingWord, Bible Aquifer, OpenBible.com and the Berean Bible Translation Committee. This text of God's Word has been dedicated to the public domain." },
+      kjv: { id: "kjv", short: "KJV", title: "King James Version (1769)", dir: "data/kjv/", sample: "For God so loved the world, that he gave his only begotten Son.", credit: "King James Version (1769). Public domain." }
+    };
+    let tr = TR.msb;
+    try { const saved = localStorage.getItem("bible_tr"); if (saved && TR[saved]) tr = TR[saved]; } catch (e) {}
     const isMobile = () => matchMedia("(max-width:900px)").matches;
 
     let chapterNote = false, view = "bible", BOOKS = [], cache = {}, cur = { n: 1, c: 1 }, sel = [], anchor = 0, hl = {}, notes = [], editing = null, draft = "", mobilePanel = false, token = 0, toastT;
@@ -364,14 +382,17 @@
     sb.auth.onAuthStateChange((ev, s) => { if (ev === "SIGNED_OUT" && !$("app").hidden) showFor(null); });
 
     // ---------- Data
+    // Loaded books are kept per translation, so switching never mixes texts.
+    const bk = (n) => cache[tr.id + ":" + n];
     async function loadBook(n) {
-      if (!cache[n]) { const r = await fetch(tr.dir + n + ".json"); if (!r.ok) throw new Error("Could not load the text."); cache[n] = await r.json(); }
-      return cache[n];
+      const t = tr, ck = t.id + ":" + n;
+      if (!cache[ck]) { const r = await fetch(t.dir + n + ".json"); if (!r.ok) throw new Error("Could not load the text."); cache[ck] = await r.json(); }
+      return cache[ck];
     }
     const bookName = (n) => (BOOKS[n - 1] || {}).name || "";
     const clean = (t) => t.replace(/^¶/, "").replace(/[\[\]]/g, "");
     const fmt = (t) => esc(t).replace(/\[([^\]]+)\]/g, "<i>$1</i>");
-    const vtext = (n, c, v) => { const b = cache[n]; return b && b.chapters[c - 1] && b.chapters[c - 1][v - 1] ? clean(b.chapters[c - 1][v - 1]) : ""; };
+    const vtext = (n, c, v) => { const b = bk(n); return b && b.chapters[c - 1] && b.chapters[c - 1][v - 1] ? clean(b.chapters[c - 1][v - 1]) : ""; };
     function refLabel(n, c, vs) {
       vs = [...vs].sort((a, b) => a - b); if (!vs.length) return bookName(n) + " " + c;
       const parts = []; let s = vs[0], p = vs[0];
@@ -421,19 +442,21 @@
       recordRecent(n, c);
       if (isMobile() && !opts.stay) setView("bible", false);
       history.replaceState(null, "", location.pathname);   // the address bar stays clean, so reopening the app always starts fresh
-      $("wheretext").textContent = b.name + " " + c; $("trname").textContent = tr.short;
+      $("wheretext").textContent = b.name + " " + c; updateTrUI();
       $("ceyebrow").textContent = BOOKS[n - 1].ot ? "Old Testament" : "New Testament";
       $("ctitle").textContent = b.name + " " + c; $("cmeta").textContent = b.chapters[c - 1].length + " verses";
       document.title = b.name + " " + c + " | Bible";
       let html = "", open = false;
       const title = (b.titles || {})[c], sub = (b.subs || {})[c], headAt = {};
-      ((b.heads || {})[c] || []).forEach(([after, txt]) => { headAt[after + 1] = txt; });   // a heading sits before verse (after + 1)
+      ((b.heads || {})[c] || []).forEach(([after, txt]) => { (headAt[after + 1] = headAt[after + 1] || []).push(txt); });   // a heading sits before verse (after + 1)
       if (title) html += '<p class="ptitle">' + fmt(title) + "</p>";
       b.chapters[c - 1].forEach((t, i) => {
         const v = i + 1, para = t.charAt(0) === "\u00b6"; if (para) t = t.slice(1);
-        if (headAt[v]) { if (open) { html += "</p>"; open = false; } html += '<h3 class="shead">' + esc(headAt[v]) + "</h3>"; }
+        if (headAt[v]) { if (open) { html += "</p>"; open = false; } headAt[v].forEach((h) => { html += '<h3 class="shead">' + esc(h) + "</h3>"; }); }
         if (!open || para) { if (open) html += "</p>"; html += '<p class="para">'; open = true; }
-        html += `<span class="v" data-v="${v}"><sup class="vn">${v}</sup>${fmt(t)} </span>`;
+        // A few verses have no text in some translations (for example Acts 8:37 in the MSB): keep the number, say so, and make it inert.
+        html += t.trim() === "" ? `<span class="v omit" data-v="${v}"><sup class="vn">${v}</sup><span class="omitnote">not in this text</span> </span>`
+                                : `<span class="v" data-v="${v}"><sup class="vn">${v}</sup>${fmt(t)} </span>`;
       });
       html += "</p>"; if (sub) html += '<p class="subs">' + fmt(sub) + "</p>";
       $("text").innerHTML = html; $("credit").textContent = tr.credit;
@@ -506,8 +529,9 @@
         <div class="mgroup"><div class="lbl" style="margin-top:0">Reading</div><div class="mcard">
           <div class="mrow"><span>Theme</span><span class="seg" role="group" aria-label="Theme"><button type="button" data-theme-set="dark" aria-pressed="${dark}">Dark</button><button type="button" data-theme-set="light" aria-pressed="${!dark}">Light</button></span></div>
           <div class="sizebox"><div style="display:flex;justify-content:space-between"><span>Text size</span><small style="color:var(--faint)" id="sizeval">${Math.round(fs)} px</small></div>
-            <input id="sizerange" type="range" min="15" max="30" step="1" value="${Math.round(fs)}" aria-label="Text size"><p class="sample">For God so loved the world, that he gave his only begotten Son.</p></div>
-          <div class="mrow"><span>Translation</span><small>${esc(tr.short)}</small></div>
+            <input id="sizerange" type="range" min="15" max="30" step="1" value="${Math.round(fs)}" aria-label="Text size"><p class="sample">${esc(tr.sample)}</p></div>
+          <div class="mrow"><span>Translation</span><span class="seg" role="group" aria-label="Translation">${Object.values(TR).map((t) => `<button type="button" data-tr-set="${t.id}" aria-pressed="${t.id === tr.id}">${esc(t.short)}</button>`).join("")}</span></div>
+          <div class="mrow" style="font-size:13.5px;color:var(--faint)"><span>${esc(tr.title)}</span></div>
         </div></div>
         <div class="mgroup"><div class="lbl">App</div><div class="mcard">
           <a class="mrow" href="../">Back to my site <span aria-hidden="true">\u2192</span></a>
@@ -518,6 +542,7 @@
     $("viewMore").addEventListener("click", (e) => {
       const t = e.target;
       if (t.closest("[data-theme-set]")) { const nx = t.closest("[data-theme-set]").dataset.themeSet; document.documentElement.setAttribute("data-theme", nx); try { localStorage.setItem("theme", nx); } catch (x) {} renderMore(); }
+      else if (t.closest("[data-tr-set]")) setTranslation(t.closest("[data-tr-set]").dataset.trSet);
       else if (t.closest("#mso")) doSignOut();
     });
     $("viewMore").addEventListener("input", (e) => {
@@ -529,20 +554,20 @@
     function marks() {
       document.querySelectorAll("#text .v").forEach((el) => {
         const v = Number(el.dataset.v), flash = el.classList.contains("flash");
-        el.className = "v" + (hl[v] ? " hl-" + hl[v] : "") + (sel.includes(v) ? " sel" : "") + (notes.some((x) => v >= x.verse_start && v <= x.verse_end) ? " hasnote" : "") + (flash ? " flash" : "");
+        el.className = "v" + (el.classList.contains("omit") ? " omit" : "") + (hl[v] ? " hl-" + hl[v] : "") + (sel.includes(v) ? " sel" : "") + (notes.some((x) => v >= x.verse_start && v <= x.verse_end) ? " hasnote" : "") + (flash ? " flash" : "");
       });
     }
     // "19 verses" plus a reminder when the chapter itself has a note.
     const chapterMeta = () => {
-      const b = cache[cur.n]; if (!b) return; const k = notes.filter((x) => x.verse_start === 0).length;
+      const b = bk(cur.n); if (!b) return; const k = notes.filter((x) => x.verse_start === 0).length;
       $("cmeta").textContent = b.chapters[cur.c - 1].length + " verses" + (k ? " · " + k + (k === 1 ? " note on this chapter" : " notes on this chapter") : "");
     };
     const sync = () => { marks(); renderPanel(); placeFtb(); chapterMeta(); };
 
     // ---------- Selection
     $("text").addEventListener("click", (e) => {
-      const el = e.target.closest(".v"); if (!el || $("text").dataset.ready !== "1") return; const v = Number(el.dataset.v);
-      if (e.shiftKey && anchor) { const a = Math.min(anchor, v), z = Math.max(anchor, v); sel = range(a, z); }
+      const el = e.target.closest(".v"); if (!el || el.classList.contains("omit") || $("text").dataset.ready !== "1") return; const v = Number(el.dataset.v);
+      if (e.shiftKey && anchor) { const a = Math.min(anchor, v), z = Math.max(anchor, v); sel = range(a, z).filter((x) => { const o = document.querySelector('#text .v[data-v="' + x + '"]'); return o && !o.classList.contains("omit"); }); }
       else { sel = sel.includes(v) ? sel.filter((x) => x !== v) : [...sel, v].sort((a, b) => a - b); anchor = v; }
       if (!sel.length) { editing = null; mobilePanel = false; }
       sync();
@@ -691,7 +716,7 @@
     };
     ["prev", "prev2"].forEach((id) => $(id).addEventListener("click", () => step(-1)));
     ["next", "nextcard"].forEach((id) => $(id).addEventListener("click", () => step(1)));
-    const anyOverlay = () => !["pickov", "searchov", "libov", "helpov"].every((id) => $(id).hidden);
+    const anyOverlay = () => !["pickov", "searchov", "libov", "helpov", "trov"].every((id) => $(id).hidden);
     document.addEventListener("keydown", (e) => {
       if ($("app").hidden) return;
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); openSearch(); return; }
@@ -723,7 +748,34 @@
     });
 
     // ---------- Book and chapter picker
-    const closeOv = () => { ["pickov", "searchov", "libov", "helpov"].forEach((id) => { $(id).hidden = true; }); };
+    const closeOv = () => { ["pickov", "searchov", "libov", "helpov", "trov"].forEach((id) => { $(id).hidden = true; }); };
+
+    // ---------- Translations
+    function updateTrUI() { $("trname").textContent = tr.short; $("trchiptext").textContent = tr.short; $("credit").textContent = tr.credit; }
+    function openTranslations() {
+      $("trsheet").innerHTML = '<h2>Translation <button class="tb" data-closetr="1">Close</button></h2><div class="trlist">'
+        + Object.values(TR).map((t) => '<button class="tropt" type="button" data-tr="' + t.id + '" aria-pressed="' + (t.id === tr.id) + '"><span><b>' + esc(t.short) + "</b><small>" + esc(t.title) + "</small></span>" + (t.id === tr.id ? '<span class="tick">&#10003;</span>' : "") + "</button>").join("") + "</div>"
+        + '<p class="hint" style="margin-top:14px">Your notes and highlights stay on the same verse numbers in every translation.</p>';
+      closeOv(); $("trov").hidden = false;
+    }
+    async function setTranslation(id) {
+      if (!TR[id] || TR[id].id === tr.id) { closeOv(); return; }
+      const y = scrollY, n = cur.n, c = cur.c;
+      tr = TR[id]; try { localStorage.setItem("bible_tr", id); } catch (e) {}
+      index = null; closeOv();
+      try { BOOKS = (await (await fetch(tr.dir + "books.json")).json()).books; } catch (e) { toast("Could not load that translation.", true); return; }
+      updateTrUI();
+      await go(n, c, 0, { stay: true });
+      window.scrollTo(0, y);
+      toast(tr.title);
+      if (view === "more") renderMore(); else if (view === "search") renderHome();
+    }
+    $("trchip").addEventListener("click", openTranslations);
+    $("trov").addEventListener("click", (e) => {
+      const t = e.target;
+      if (t === $("trov") || t.closest("[data-closetr]")) closeOv();
+      else if (t.closest("[data-tr]")) setTranslation(t.closest("[data-tr]").dataset.tr);
+    });
     function pickBooks() {
       const grp = (list, title) => `<div class="tgroup">${title}</div><div class="bgrid">${list.map((b) => `<button class="bk${b.n === cur.n ? " on" : ""}" data-book="${b.n}">${esc(b.name)}</button>`).join("")}</div>`;
       $("picksheet").innerHTML = `<h2>Choose a book <button class="tb" data-close="1">Close</button></h2>${grp(BOOKS.filter((b) => b.ot), "Old Testament")}${grp(BOOKS.filter((b) => !b.ot), "New Testament")}`;
@@ -751,7 +803,7 @@
       if (index) return index;
       out.innerHTML = '<li class="rt">Loading the Bible…</li>';
       await Promise.all(BOOKS.map((b) => loadBook(b.n)));
-      index = []; BOOKS.forEach((b) => cache[b.n].chapters.forEach((vs, ci) => vs.forEach((t, vi) => {
+      index = []; BOOKS.forEach((b) => bk(b.n).chapters.forEach((vs, ci) => vs.forEach((t, vi) => {
         const text = t.replace(/^¶/, ""); index.push({ n: b.n, c: ci + 1, v: vi + 1, text, lc: plain(text) });
       })));
       return index;
