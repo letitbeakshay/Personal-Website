@@ -19,19 +19,27 @@
     button { font:inherit; }
 
     /* Login */
-    .gate { min-height:100vh; display:grid; place-items:center; padding:20px; }
+    .gate { min-height:100vh; min-height:100dvh; display:grid; place-items:center; padding:20px; }
     .gate form { width:100%; max-width:340px; display:grid; gap:14px; }
+    .gate .mk { width:44px; height:44px; border-radius:12px; background:var(--panel-2); border:1px solid var(--line); display:grid; place-items:center; margin-bottom:4px; }
+    .gate .mk svg { width:22px; height:22px; color:var(--accent); }
     .gate h1 { margin:0 0 4px; font:400 32px/1.1 var(--display); }
     .gate p { margin:0; color:var(--muted); }
-    .gate input { width:100%; padding:11px 13px; border:1px solid var(--line-2); border-radius:9px; background:var(--panel); color:var(--fg); font:inherit; }
+    .pwrow { position:relative; }
+    .pwrow input { width:100%; padding:12px 64px 12px 14px; border:1px solid var(--line-2); border-radius:10px; background:var(--panel); color:var(--fg); font:inherit; font-size:16px; letter-spacing:.02em; }
+    .pwrow input:focus { border-color:var(--accent); outline:none; box-shadow:0 0 0 3px var(--tint); }
+    .pwrow button { position:absolute; right:6px; top:6px; height:32px; padding:0 10px; border:0; border-radius:7px; background:transparent; color:var(--muted); font-size:13px; cursor:pointer; }
+    .pwrow button:hover { color:var(--fg); background:var(--panel-2); }
+    .shake { animation:shake .38s; }
+    @keyframes shake { 20%,60% { transform:translateX(-7px); } 40%,80% { transform:translateX(7px); } }
     .msg { min-height:1.3em; font-size:14px; color:var(--muted); }
     .msg.err { color:#e5484d; } .msg.ok { color:var(--ok); }
 
     /* Top bar */
+    .progress { position:fixed; top:0; left:0; height:2px; width:0; background:var(--accent); z-index:50; transition:width .1s; }
     .topbar { position:sticky; top:0; z-index:20; height:var(--topbar); display:flex; align-items:center; gap:6px; padding:0 14px; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
-    .tb { height:36px; min-width:36px; padding:0 10px; border:1px solid transparent; border-radius:9px; background:transparent; color:var(--muted); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:14px; }
+    .tb { height:36px; min-width:36px; padding:0 10px; border:1px solid transparent; border-radius:9px; background:transparent; color:var(--muted); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:14px; white-space:nowrap; }
     .tb:hover { color:var(--fg); background:var(--panel-2); }
-    .tb { white-space:nowrap; }
     .tb svg { width:18px; height:18px; }
     .where { font:600 16px var(--sans); color:var(--fg); padding:0 12px; border-color:var(--line); }
     .where small { font:400 12px var(--mono); color:var(--faint); }
@@ -42,12 +50,15 @@
     .app { display:grid; grid-template-columns:minmax(0,1fr) var(--panelw); min-height:calc(100vh - var(--topbar)); }
     .reader { padding:34px clamp(16px,4vw,48px) 140px; }
     .page { max-width:680px; margin:0 auto; }
-    .chead { margin:0 0 24px; }
-    .chead h1 { margin:0; font:400 clamp(30px,4vw,40px)/1.1 var(--display); }
-    .chead p { margin:6px 0 0; color:var(--faint); font:400 13px var(--mono); }
+    .chead { margin:0 0 26px; }
+    .chead .eyebrow2 { font:500 12px var(--mono); letter-spacing:.06em; text-transform:uppercase; color:var(--faint); margin:0 0 8px; }
+    .chead h1 { margin:0; font:400 clamp(32px,4.4vw,44px)/1.08 var(--display); }
+    .chead p { margin:8px 0 0; color:var(--faint); font:400 13px var(--mono); }
 
     /* Scripture */
-    .text { font-family:var(--scripture); font-size:var(--fs,19px); line-height:1.85; font-weight:400; }
+    .text { font-family:var(--scripture); font-size:var(--fs,19px); line-height:1.85; font-weight:400; min-height:50vh; }
+    .skel { height:14px; border-radius:6px; margin:0 0 16px; background:linear-gradient(90deg,var(--panel-2),var(--panel),var(--panel-2)); background-size:200% 100%; animation:sk 1.2s linear infinite; }
+    @keyframes sk { to { background-position:-200% 0; } }
     .para { margin:0 0 1.1em; }
     .v { cursor:pointer; border-radius:3px; -webkit-box-decoration-break:clone; box-decoration-break:clone; transition:background .12s; }
     .v:hover { background:var(--tint); }
@@ -59,21 +70,39 @@
     .v.hl-blue { background:rgba(91,157,255,.28); } .v.hl-pink { background:rgba(240,111,168,.28); } .v.hl-orange { background:rgba(255,122,69,.30); }
     [data-theme="light"] .v.hl-yellow { background:rgba(245,197,66,.42); } [data-theme="light"] .v.hl-green { background:rgba(76,199,154,.38); }
     [data-theme="light"] .v.hl-blue { background:rgba(91,157,255,.36); } [data-theme="light"] .v.hl-pink { background:rgba(240,111,168,.34); } [data-theme="light"] .v.hl-orange { background:rgba(255,122,69,.36); }
-    .v.sel.hl-yellow, .v.sel.hl-green, .v.sel.hl-blue, .v.sel.hl-pink, .v.sel.hl-orange { box-shadow:0 2px 0 var(--accent); }
-    .pager { display:flex; justify-content:space-between; margin-top:34px; padding-top:18px; border-top:1px solid var(--line); }
+    .v.flash { animation:flash 1.6s; }
+    @keyframes flash { 0%,40% { background:var(--tint); box-shadow:0 2px 0 var(--accent); } }
+    .nextcard { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:34px; padding:18px 20px; border:1px solid var(--line); border-radius:14px; background:var(--panel); cursor:pointer; text-align:left; width:100%; color:var(--fg); }
+    .nextcard:hover { border-color:var(--line-2); background:var(--panel-2); }
+    .nextcard small { display:block; color:var(--faint); font:400 12px var(--mono); margin-bottom:2px; }
+    .nextcard b { font:400 24px var(--display); }
+    .pager2 { display:flex; justify-content:space-between; margin-top:14px; }
     .credit { margin-top:26px; color:var(--faint); font-size:12.5px; }
+
+    /* Floating verse toolbar */
+    .ftb { position:fixed; z-index:25; display:flex; align-items:center; gap:4px; padding:6px; background:var(--panel); border:1px solid var(--line-2); border-radius:14px; box-shadow:0 14px 40px rgba(0,0,0,.45); animation:pop .14s ease-out; }
+    @keyframes pop { from { opacity:0; transform:translateY(6px) scale(.97); } }
+    .ftb .dot { width:26px; height:26px; border-radius:50%; border:2px solid transparent; padding:0; cursor:pointer; }
+    .ftb .dot:hover { transform:scale(1.12); } .ftb .dot.on { border-color:var(--fg); }
+    .ftb .sep { width:1px; height:22px; background:var(--line-2); margin:0 4px; }
+    .ib { height:32px; padding:0 11px; border:0; border-radius:9px; background:transparent; color:var(--muted); cursor:pointer; font-size:13.5px; display:inline-flex; align-items:center; gap:6px; }
+    .ib:hover { color:var(--fg); background:var(--panel-2); } .ib svg { width:16px; height:16px; }
+    @media (max-width:900px) { .ftb { left:50% !important; top:auto !important; bottom:calc(14px + env(safe-area-inset-bottom)); transform:translateX(-50%); } .ftb .dot { width:30px; height:30px; } }
 
     /* Side panel */
     .panel { position:sticky; top:var(--topbar); height:calc(100vh - var(--topbar)); overflow:auto; border-left:1px solid var(--line); background:var(--panel); padding:18px 18px 40px; }
     .ph { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:0 0 10px; font:600 13px var(--sans); color:var(--muted); }
     .ph b { color:var(--fg); font-weight:600; }
-    .hint { color:var(--faint); font-size:14px; margin:0 0 16px; }
-    .sw { display:flex; gap:8px; align-items:center; margin-bottom:14px; flex-wrap:wrap; }
+    .exc { margin:-4px 0 12px; font:italic 400 14px/1.5 var(--scripture); color:var(--muted); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+    .hint { color:var(--faint); font-size:14px; margin:0 0 16px; line-height:1.55; }
+    .sw { display:none; gap:8px; align-items:center; margin-bottom:14px; flex-wrap:wrap; }
     .sw button { width:28px; height:28px; border-radius:50%; border:2px solid transparent; cursor:pointer; padding:0; }
-    .sw button:hover { transform:scale(1.1); } .sw button.on { border-color:var(--fg); }
+    .sw button.on { border-color:var(--fg); }
     .sw .clr { width:auto; border-radius:8px; padding:0 10px; background:transparent; border:1px solid var(--line-2); color:var(--muted); font-size:12.5px; height:28px; }
-    .panel textarea { width:100%; min-height:110px; resize:vertical; padding:11px 12px; border:1px solid var(--line-2); border-radius:10px; background:var(--bg); color:var(--fg); font:inherit; font-size:14.5px; line-height:1.55; }
-    .row2 { display:flex; gap:8px; margin:10px 0 22px; }
+    .panel textarea { width:100%; min-height:110px; max-height:45vh; resize:none; padding:11px 12px; border:1px solid var(--line-2); border-radius:10px; background:var(--bg); color:var(--fg); font:inherit; font-size:14.5px; line-height:1.55; }
+    .panel textarea:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--tint); }
+    .row2 { display:flex; gap:8px; align-items:center; margin:10px 0 22px; }
+    .row2 kbd { margin-left:auto; }
     .btn.sm { padding:7px 14px; font-size:13.5px; border-radius:8px; }
     .btn.danger:hover { border-color:#e5484d; color:#e5484d; }
     .nlist { list-style:none; margin:0; padding:0; border-top:1px solid var(--line); }
@@ -82,11 +111,14 @@
     .nitem .nr { font:500 12px var(--mono); color:var(--accent); }
     .nitem .nt { margin:3px 0 0; color:var(--muted); font-size:14px; white-space:pre-wrap; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
     .nitem.editing { background:var(--tint); margin:0 -8px; padding:12px 8px; border-radius:8px; }
+    .sheetx { display:none; }
 
     /* Overlays */
-    .overlay { position:fixed; inset:0; z-index:40; background:rgba(0,0,0,.55); display:grid; place-items:start center; padding:6vh 14px; overflow:auto; }
+    .overlay { position:fixed; inset:0; z-index:40; background:rgba(0,0,0,.55); display:grid; place-items:start center; padding:6vh 14px; overflow:auto; animation:fade .12s; }
+    @keyframes fade { from { opacity:0; } }
     .sheet { width:100%; max-width:640px; background:var(--panel); border:1px solid var(--line-2); border-radius:16px; padding:20px; box-shadow:0 30px 80px rgba(0,0,0,.5); }
-    .sheet h2 { margin:0 0 14px; font:600 15px var(--sans); display:flex; justify-content:space-between; align-items:center; }
+    .sheet.wide { max-width:760px; }
+    .sheet h2 { margin:0 0 14px; font:600 15px var(--sans); display:flex; justify-content:space-between; align-items:center; gap:8px; }
     .tgroup { font:600 12px var(--sans); color:var(--faint); margin:16px 0 8px; }
     .bgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:6px; }
     .bk { text-align:left; padding:8px 10px; border-radius:8px; border:1px solid var(--line); background:transparent; color:var(--fg); cursor:pointer; font-size:14px; }
@@ -94,35 +126,50 @@
     .cgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(52px,1fr)); gap:6px; }
     .cgrid .bk { text-align:center; padding:9px 0; font-family:var(--mono); }
     .sinput { width:100%; padding:12px 14px; border:1px solid var(--line-2); border-radius:10px; background:var(--bg); color:var(--fg); font:inherit; font-size:16px; }
+    .sinput:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--tint); }
     .res { list-style:none; margin:12px 0 0; padding:0; max-height:55vh; overflow:auto; }
-    .res li { padding:10px 6px; border-bottom:1px solid var(--line); cursor:pointer; border-radius:6px; }
-    .res li:hover, .res li.go { background:var(--tint); }
+    .res li { padding:10px 8px; border-bottom:1px solid var(--line); cursor:pointer; border-radius:8px; }
+    .res li:hover, .res li.go, .res li.act { background:var(--tint); }
     .res .rr { font:500 12.5px var(--mono); color:var(--accent); }
     .res .rt { margin:2px 0 0; font-family:var(--scripture); font-size:15px; color:var(--muted); line-height:1.5; }
+    .res .rn { margin:2px 0 0; font-size:14px; color:var(--fg); white-space:pre-wrap; }
     .res mark { background:rgba(245,197,66,.35); color:var(--fg); border-radius:2px; }
-    .toast { position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:60; background:var(--fg); color:var(--bg); padding:9px 16px; border-radius:10px; font-size:14px; box-shadow:0 10px 30px rgba(0,0,0,.4); }
+    .res .bar, .chip2 .bar { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
+    .tabs2 { display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; }
+    .chip2 { padding:6px 13px; border-radius:999px; border:1px solid var(--line); background:transparent; color:var(--muted); font:500 13px var(--sans); cursor:pointer; }
+    .chip2:hover { color:var(--fg); border-color:var(--line-2); } .chip2[aria-pressed="true"] { background:var(--fg); color:var(--bg); border-color:transparent; }
+    .helpgrid { display:grid; grid-template-columns:auto 1fr; gap:10px 18px; align-items:center; font-size:14.5px; }
+    .helpgrid span { color:var(--muted); }
+    .toast { position:fixed; left:50%; bottom:86px; transform:translateX(-50%); z-index:60; background:var(--fg); color:var(--bg); padding:9px 16px; border-radius:10px; font-size:14px; box-shadow:0 10px 30px rgba(0,0,0,.4); animation:pop .14s; }
     .toast.err { background:#e5484d; color:#fff; }
 
     /* Mobile: panel becomes a bottom sheet */
     @media (max-width:900px) {
       .app { grid-template-columns:1fr; }
-      .panel { position:fixed; left:0; right:0; bottom:0; top:auto; height:auto; max-height:58vh; z-index:30; border-left:0; border-top:1px solid var(--line-2); border-radius:16px 16px 0 0; transform:translateY(105%); transition:transform .2s; box-shadow:0 -20px 50px rgba(0,0,0,.4); padding-bottom:max(40px, env(safe-area-inset-bottom)); }
+      .panel { position:fixed; left:0; right:0; bottom:0; top:auto; height:auto; max-height:62vh; z-index:30; border-left:0; border-top:1px solid var(--line-2); border-radius:16px 16px 0 0; transform:translateY(105%); transition:transform .2s; box-shadow:0 -20px 50px rgba(0,0,0,.4); padding-bottom:max(40px, env(safe-area-inset-bottom)); }
       .panel.open { transform:none; }
+      .panel .sw { display:flex; }
+      .sheetx { display:inline-flex; }
       .reader { padding-bottom:40vh; }
       .brand { display:none; }
     }
     @media (max-width:560px) { .fs { display:none; } .topbar { padding:0 8px; gap:2px; } .where { padding:0 10px; } }
     @media (min-width:901px) { .only-m { display:none !important; } }
-    @media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
+    @media (prefers-reduced-motion:reduce) { * { transition:none !important; animation:none !important; } }
   </style>
 </head>
 <body>
+  <div class="progress" id="progress"></div>
 
   <!-- Login -->
   <section class="gate" id="gate">
     <form id="loginform" autocomplete="off">
-      <div><h1>Bible</h1><p>Enter your password to continue.</p></div>
-      <input id="pw" type="password" placeholder="Password" required autocomplete="current-password" aria-label="Password" autofocus>
+      <div class="mk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18"/><path d="M7 8h10"/></svg></div>
+      <div><h1>Bible</h1><p>Enter your security code to continue.</p></div>
+      <div class="pwrow">
+        <input id="pw" type="password" placeholder="Security code" required autocomplete="current-password" aria-label="Security code" autofocus>
+        <button type="button" id="pwshow" aria-label="Show or hide the code">Show</button>
+      </div>
       <button class="btn primary" type="submit" id="loginbtn" style="justify-content:center">Open</button>
       <div class="msg" id="loginmsg" role="status"></div>
     </form>
@@ -136,10 +183,11 @@
       <button class="tb where" id="where" aria-label="Choose book and chapter"><span id="wheretext">John 3</span> <small id="trname">KJV</small></button>
       <button class="tb" id="next" aria-label="Next chapter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
       <span class="spacer"></span>
-      <button class="tb" id="searchbtn" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button>
+      <button class="tb" id="searchbtn" aria-label="Search" title="Search (Ctrl or Cmd + K)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button>
+      <button class="tb" id="libbtn" aria-label="My notes and highlights" title="My notes and highlights"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6 4h12v17l-6-4-6 4z"/></svg></button>
       <button class="tb fs" id="fsdown" aria-label="Smaller text">A-</button>
       <button class="tb fs" id="fsup" aria-label="Larger text">A+</button>
-      <button class="tb only-m" id="notesbtn" aria-label="Notes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7z"/><path d="M10 12h5M10 16h5"/></svg></button>
+      <button class="tb only-m" id="notesbtn" aria-label="Notes in this chapter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7z"/><path d="M10 12h5M10 16h5"/></svg></button>
       <button class="tb" id="theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 4v16" /></svg></button>
       <button class="tb" id="signout" aria-label="Sign out" title="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5H6v14h4"/><path d="M14 8l4 4-4 4"/><path d="M18 12H9"/></svg></button>
     </header>
@@ -147,22 +195,40 @@
     <div class="app">
       <main class="reader" id="reader">
         <div class="page">
-          <div class="chead"><h1 id="ctitle"></h1><p id="cmeta"></p></div>
+          <div class="chead"><p class="eyebrow2" id="ceyebrow"></p><h1 id="ctitle"></h1><p id="cmeta"></p></div>
           <div class="text" id="text" aria-live="polite"></div>
-          <div class="pager"><button class="btn ghost sm" id="prev2">← Previous</button><button class="btn ghost sm" id="next2">Next →</button></div>
+          <button class="nextcard" id="nextcard" type="button"><span><small>Next chapter</small><b id="nextname"></b></span><span aria-hidden="true">→</span></button>
+          <div class="pager2"><button class="btn ghost sm" id="prev2">← Previous</button><span></span></div>
           <p class="credit" id="credit">King James Version (1769). Public domain.</p>
         </div>
       </main>
       <aside class="panel" id="panel" aria-label="Notes and highlights"></aside>
     </div>
+
+    <div class="ftb" id="ftb" role="toolbar" aria-label="Verse actions" hidden></div>
   </div>
 
   <div class="overlay" id="pickov" hidden><div class="sheet" id="picksheet" role="dialog" aria-label="Choose book and chapter"></div></div>
   <div class="overlay" id="searchov" hidden>
     <div class="sheet" role="dialog" aria-label="Search">
-      <h2>Search <button class="tb" id="searchclose" aria-label="Close">Close</button></h2>
-      <input class="sinput" id="sq" type="search" placeholder='Search words, or go to a verse, e.g. "john 3:16"' aria-label="Search the Bible" autocomplete="off">
+      <h2>Search or go to a verse <button class="tb" id="searchclose" aria-label="Close">Close</button></h2>
+      <input class="sinput" id="sq" type="search" placeholder='Words, or a verse like "john 3:16"' aria-label="Search the Bible" autocomplete="off">
       <ul class="res" id="res"></ul>
+    </div>
+  </div>
+  <div class="overlay" id="libov" hidden><div class="sheet wide" id="libsheet" role="dialog" aria-label="My notes and highlights"></div></div>
+  <div class="overlay" id="helpov" hidden>
+    <div class="sheet" role="dialog" aria-label="Shortcuts">
+      <h2>Shortcuts <button class="tb" data-closehelp="1">Close</button></h2>
+      <div class="helpgrid">
+        <kbd>← →</kbd><span>Previous or next chapter</span>
+        <kbd>Ctrl/Cmd K</kbd><span>Search or go to a verse</span>
+        <kbd>/</kbd><span>Search</span>
+        <kbd>Shift + click</kbd><span>Select a range of verses</span>
+        <kbd>Ctrl/Cmd Enter</kbd><span>Save the note you are writing</span>
+        <kbd>Esc</kbd><span>Clear selection or close</span>
+        <kbd>?</kbd><span>This help</span>
+      </div>
     </div>
   </div>
   <div class="toast" id="toast" hidden></div>
@@ -171,36 +237,46 @@
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm";
     const C = window.CONFIG;
-    const sb = createClient(C.SUPABASE_URL, C.SUPABASE_KEY);
+    // Stay signed in: the session is stored on this device and refreshed automatically, so you are not asked again
+    // for months. A separate storage key keeps this login independent from the admin panel's.
+    const sb = createClient(C.SUPABASE_URL, C.SUPABASE_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: "sb-bible-auth" } });
     const $ = (id) => document.getElementById(id);
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     const COLORS = { yellow: "#f5c542", green: "#4cc79a", blue: "#5b9dff", pink: "#f06fa8", orange: "#ff7a45" };
     // Translations. To add NKJV later (once licensed), add an entry here with its own data folder or loader.
     const TR = { kjv: { id: "kjv", short: "KJV", dir: "data/kjv/", credit: "King James Version (1769). Public domain." } };
     const tr = TR.kjv;
+    const isMobile = () => matchMedia("(max-width:900px)").matches;
 
-    let BOOKS = [], cache = {}, cur = { n: 1, c: 1 }, sel = [], hl = {}, notes = [], editing = null, draft = "", mobilePanel = false, token = 0, toastT;
+    let BOOKS = [], cache = {}, cur = { n: 1, c: 1 }, sel = [], anchor = 0, hl = {}, notes = [], editing = null, draft = "", mobilePanel = false, token = 0, toastT;
 
     const toast = (m, err) => { const t = $("toast"); t.textContent = m; t.className = "toast" + (err ? " err" : ""); t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, err ? 5000 : 1800); };
     const explain = (e) => /relation .* does not exist|42P01|schema cache/i.test(e.message || "") ? "The Bible tables are missing in the database." : /row-level|42501|permission|JWT/i.test(e.message || "") ? "Not allowed. Please sign in again." : (e.message || "Something went wrong.");
 
     // ---------- Login
     let fails = 0, lockUntil = 0;
-    async function showFor(session) {
+    function showFor(session) {
       $("gate").hidden = !!session; $("app").hidden = !session;
       if (session) start(); else setTimeout(() => $("pw").focus(), 50);
     }
+    $("pwshow").addEventListener("click", () => { const i = $("pw"), show = i.type === "password"; i.type = show ? "text" : "password"; $("pwshow").textContent = show ? "Hide" : "Show"; i.focus(); });
     $("loginform").addEventListener("submit", async (e) => {
       e.preventDefault(); const m = $("loginmsg");
       if (Date.now() < lockUntil) { m.textContent = "Too many tries. Wait a moment."; m.className = "msg err"; return; }
       $("loginbtn").disabled = true; m.textContent = "Checking…"; m.className = "msg";
-      const { data, error } = await sb.auth.signInWithPassword({ email: C.ADMIN_EMAIL, password: $("pw").value });
+      const { data, error } = await sb.auth.signInWithPassword({ email: C.BIBLE_EMAIL, password: $("pw").value.trim() + C.BIBLE_PAD });
       $("loginbtn").disabled = false;
-      if (error || !data.session) { if (++fails >= 5) { lockUntil = Date.now() + 30000; fails = 0; } m.textContent = "That is not the right password."; m.className = "msg err"; $("pw").select(); return; }
+      if (error || !data.session) {
+        if (++fails >= 5) { lockUntil = Date.now() + 30000; fails = 0; }
+        m.textContent = "That is not the right code."; m.className = "msg err";
+        const f = $("loginform"); f.classList.remove("shake"); void f.offsetWidth; f.classList.add("shake"); $("pw").select(); return;
+      }
       $("pw").value = ""; m.textContent = ""; showFor(data.session);
     });
-    $("signout").addEventListener("click", async () => { await sb.auth.signOut(); sel = []; hl = {}; notes = []; showFor(null); });
+    $("signout").addEventListener("click", async () => { await sb.auth.signOut(); sel = []; hl = {}; notes = []; closeOv(); hideFtb(); showFor(null); });
     sb.auth.getSession().then(({ data }) => showFor(data.session));
+    // If the session ever ends (for example it was revoked), return to the login screen.
+    sb.auth.onAuthStateChange((ev, s) => { if (ev === "SIGNED_OUT" && !$("app").hidden) showFor(null); });
 
     // ---------- Data
     async function loadBook(n) {
@@ -208,18 +284,19 @@
       return cache[n];
     }
     const bookName = (n) => (BOOKS[n - 1] || {}).name || "";
+    const clean = (t) => t.replace(/^¶/, "").replace(/[\[\]]/g, "");
     const fmt = (t) => esc(t).replace(/\[([^\]]+)\]/g, "<i>$1</i>");
+    const vtext = (n, c, v) => { const b = cache[n]; return b && b.chapters[c - 1] && b.chapters[c - 1][v - 1] ? clean(b.chapters[c - 1][v - 1]) : ""; };
     function refLabel(n, c, vs) {
       vs = [...vs].sort((a, b) => a - b); if (!vs.length) return bookName(n) + " " + c;
       const parts = []; let s = vs[0], p = vs[0];
       for (let i = 1; i <= vs.length; i++) { if (vs[i] === p + 1) { p = vs[i]; continue; } parts.push(s === p ? "" + s : s + "–" + p); s = vs[i]; p = vs[i]; }
       return bookName(n) + " " + c + ":" + parts.join(", ");
     }
+    const range = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
 
     async function start() {
-      if (!BOOKS.length) {
-        const r = await fetch(tr.dir + "books.json"); BOOKS = (await r.json()).books;
-      }
+      if (!BOOKS.length) { const r = await fetch(tr.dir + "books.json"); BOOKS = (await r.json()).books; }
       const h = location.hash.replace("#", "").split(".").map(Number);
       let n = 1, c = 1, v = 0;
       if (h[0] >= 1 && h[0] <= 66) { n = h[0]; c = h[1] || 1; v = h[2] || 0; }
@@ -235,14 +312,20 @@
       if (h[0] >= 1 && h[0] <= 66 && (h[0] !== cur.n || (h[1] || 1) !== cur.c || h[2])) go(h[0], h[1] || 1, h[2] || 0);
     });
 
+    const nextOf = (n, c) => { const b = BOOKS[n - 1]; if (c < b.chapters) return [n, c + 1]; return n < 66 ? [n + 1, 1] : null; };
+
     async function go(n, c, verse) {
       const my = ++token;
+      $("text").dataset.ready = "0";
+      $("text").innerHTML = '<div class="skel" style="width:92%"></div><div class="skel" style="width:78%"></div><div class="skel" style="width:86%"></div><div class="skel" style="width:60%"></div>';
       let b; try { b = await loadBook(n); } catch (e) { toast(explain(e), true); return; }
+      if (my !== token) return;
       c = Math.min(Math.max(1, c), b.chapters.length);
-      cur = { n, c }; sel = []; editing = null; draft = ""; hl = {}; notes = [];
+      cur = { n, c }; sel = []; anchor = 0; editing = null; draft = ""; hl = {}; notes = []; mobilePanel = false;
       try { localStorage.setItem("bible_pos", JSON.stringify(cur)); } catch (e) {}
       history.replaceState(null, "", "#" + n + "." + c + (verse ? "." + verse : ""));
       $("wheretext").textContent = b.name + " " + c; $("trname").textContent = tr.short;
+      $("ceyebrow").textContent = BOOKS[n - 1].ot ? "Old Testament" : "New Testament";
       $("ctitle").textContent = b.name + " " + c; $("cmeta").textContent = b.chapters[c - 1].length + " verses";
       document.title = b.name + " " + c + " | Bible";
       let html = "", open = false;
@@ -251,10 +334,12 @@
         if (!open || para) { if (open) html += "</p>"; html += '<p class="para">'; open = true; }
         html += `<span class="v" data-v="${v}"><sup class="vn">${v}</sup>${fmt(t)} </span>`;
       });
-      $("text").dataset.ready = "0"; $("text").innerHTML = html + "</p>"; $("credit").textContent = tr.credit;
-      $("reader").scrollTop = 0; window.scrollTo(0, 0);
-      renderPanel();
-      if (verse) { const el = document.querySelector('.v[data-v="' + verse + '"]'); if (el) { sel = [verse]; marks(); renderPanel(); setTimeout(() => el.scrollIntoView({ block: "center" }), 30); } }
+      $("text").innerHTML = html + "</p>"; $("credit").textContent = tr.credit;
+      const nx = nextOf(n, c); $("nextcard").hidden = !nx; if (nx) $("nextname").textContent = bookName(nx[0]) + " " + nx[1];
+      window.scrollTo(0, 0);
+      sync();
+      if (nx) loadBook(nx[0]).catch(() => {});   // warm the next chapter so turning the page is instant
+      if (verse) { const el = document.querySelector('.v[data-v="' + verse + '"]'); if (el) { setTimeout(() => { el.scrollIntoView({ block: "center" }); el.classList.add("flash"); }, 30); } }
       // Your highlights and notes for this chapter
       const [h, nn] = await Promise.all([
         sb.from("bible_highlights").select("verse,color").eq("book", n).eq("chapter", c),
@@ -264,39 +349,84 @@
       $("text").dataset.ready = "1";
       if (h.error || nn.error) { toast(explain(h.error || nn.error), true); return; }
       hl = {}; h.data.forEach((r) => { hl[r.verse] = r.color; }); notes = nn.data;
-      marks(); renderPanel();
+      sync();
     }
 
     function marks() {
       document.querySelectorAll("#text .v").forEach((el) => {
-        const v = Number(el.dataset.v);
-        el.className = "v" + (hl[v] ? " hl-" + hl[v] : "") + (sel.includes(v) ? " sel" : "") + (notes.some((x) => v >= x.verse_start && v <= x.verse_end) ? " hasnote" : "");
+        const v = Number(el.dataset.v), flash = el.classList.contains("flash");
+        el.className = "v" + (hl[v] ? " hl-" + hl[v] : "") + (sel.includes(v) ? " sel" : "") + (notes.some((x) => v >= x.verse_start && v <= x.verse_end) ? " hasnote" : "") + (flash ? " flash" : "");
       });
     }
+    const sync = () => { marks(); renderPanel(); placeFtb(); };
 
     // ---------- Selection
     $("text").addEventListener("click", (e) => {
       const el = e.target.closest(".v"); if (!el || $("text").dataset.ready !== "1") return; const v = Number(el.dataset.v);
-      sel = sel.includes(v) ? sel.filter((x) => x !== v) : [...sel, v].sort((a, b) => a - b);
-      if (!sel.length) editing = null;
-      if (sel.length) mobilePanel = true; else mobilePanel = false;
-      marks(); renderPanel();
+      if (e.shiftKey && anchor) { const a = Math.min(anchor, v), z = Math.max(anchor, v); sel = range(a, z); }
+      else { sel = sel.includes(v) ? sel.filter((x) => x !== v) : [...sel, v].sort((a, b) => a - b); anchor = v; }
+      if (!sel.length) { editing = null; mobilePanel = false; }
+      sync();
     });
-    function clearSel() { sel = []; editing = null; draft = ""; mobilePanel = false; marks(); renderPanel(); }
+    function clearSel() { sel = []; anchor = 0; editing = null; draft = ""; mobilePanel = false; sync(); }
+    $("reader").addEventListener("click", (e) => { if (sel.length && !e.target.closest(".v, button, a, .ftb")) clearSel(); });
 
-    // ---------- Highlights
+    // ---------- Floating verse toolbar
+    function buildFtb() {
+      const only = (() => { const cs = new Set(sel.map((v) => hl[v]).filter(Boolean)); return cs.size === 1 ? [...cs][0] : ""; })();
+      const any = sel.some((v) => hl[v]);
+      $("ftb").innerHTML = Object.entries(COLORS).map(([k, v]) => `<button class="dot${only === k ? " on" : ""}" style="background:${v}" data-color="${k}" aria-label="Highlight ${k}" title="Highlight ${k}"></button>`).join("")
+        + (any ? `<button class="ib" id="tbclear" title="Remove highlight" aria-label="Remove highlight">Remove</button>` : "")
+        + `<span class="sep"></span><button class="ib" id="tbnote" aria-label="Write a note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M5 5h14v10H10l-5 4z"/></svg>Note</button>`
+        + `<button class="ib" id="tbcopy" aria-label="Copy verse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></svg>Copy</button>`;
+    }
+    function hideFtb() { $("ftb").hidden = true; }
+    function placeFtb(rebuild = true) {
+      const f = $("ftb");
+      if (!sel.length || (isMobile() && mobilePanel)) { f.hidden = true; return; }
+      if (rebuild || f.hidden) buildFtb();   // only rebuild when the selection changes, never while scrolling
+      f.hidden = false;
+      if (isMobile()) return;
+      const els = sel.map((v) => document.querySelector('.v[data-v="' + v + '"]')).filter(Boolean); if (!els.length) return;
+      const first = els[0].getClientRects()[0], lastRects = els[els.length - 1].getClientRects(), last = lastRects[lastRects.length - 1];
+      const w = f.offsetWidth, h = f.offsetHeight, rd = $("reader").getBoundingClientRect();
+      let top = first.top - h - 10, mid = first.left + first.width / 2;
+      if (top < 66) top = last.bottom + 10;                       // no room above: go below the selection
+      if (top > innerHeight - h - 8) top = Math.min(Math.max(66, first.top - h - 10), innerHeight - h - 8);
+      f.style.top = Math.round(top) + "px";
+      f.style.left = Math.round(Math.min(Math.max(rd.left + 8, mid - w / 2), rd.right - w - 8)) + "px";
+    }
+    let raf; const queue = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { placeFtb(false); progress(); }); };
+    addEventListener("scroll", queue, { passive: true }); addEventListener("resize", queue);
+    function progress() { const d = document.documentElement, max = d.scrollHeight - innerHeight; $("progress").style.width = (max > 0 ? Math.min(100, (scrollY / max) * 100) : 0) + "%"; }
+    $("ftb").addEventListener("click", (e) => {
+      const t = e.target;
+      if (t.closest("[data-color]")) setColor(t.closest("[data-color]").dataset.color);
+      else if (t.closest("#tbclear")) clearColor();
+      else if (t.closest("#tbcopy")) copySel();
+      else if (t.closest("#tbnote")) { mobilePanel = true; renderPanel(); placeFtb(); const ta = $("nbody"); if (ta && !isMobile()) ta.focus(); else if (ta) setTimeout(() => ta.focus(), 220); }
+    });
+
+    // ---------- Highlights, copy
     async function setColor(color) {
       if (!sel.length) return;
       const vs = [...sel], rows = vs.map((verse) => ({ book: cur.n, chapter: cur.c, verse, color, updated_at: new Date().toISOString() }));
-      vs.forEach((v) => { hl[v] = color; }); marks(); renderPanel();
+      vs.forEach((v) => { hl[v] = color; }); sync();
       const { error } = await sb.from("bible_highlights").upsert(rows, { onConflict: "book,chapter,verse" });
       if (error) { toast(explain(error), true); go(cur.n, cur.c); }
     }
     async function clearColor() {
       const vs = sel.filter((v) => hl[v]); if (!vs.length) return;
-      vs.forEach((v) => { delete hl[v]; }); marks(); renderPanel();
+      vs.forEach((v) => { delete hl[v]; }); sync();
       const { error } = await sb.from("bible_highlights").delete().eq("book", cur.n).eq("chapter", cur.c).in("verse", vs);
       if (error) { toast(explain(error), true); go(cur.n, cur.c); }
+    }
+    async function copySel() {
+      if (!sel.length) return;
+      const body = sel.map((v) => vtext(cur.n, cur.c, v)).join(" "), txt = "“" + body + "”\n" + refLabel(cur.n, cur.c, sel) + " (" + tr.short + ")";
+      try { await navigator.clipboard.writeText(txt); }
+      catch (e) { const ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); } catch (x) {} ta.remove(); }
+      toast("Copied " + refLabel(cur.n, cur.c, sel));
     }
 
     // ---------- Notes
@@ -312,50 +442,57 @@
         if (!res.error) notes = [...notes, res.data].sort((a, b) => a.verse_start - b.verse_start);
       }
       if (res.error) { toast(explain(res.error), true); return; }
-      toast("Note saved."); editing = null; draft = ""; sel = []; mobilePanel = false; marks(); renderPanel();
+      toast("Note saved."); editing = null; draft = ""; sel = []; anchor = 0; mobilePanel = false; sync();
     }
     async function deleteNote() {
       if (!editing || !confirm("Delete this note? This cannot be undone.")) return;
       const { error } = await sb.from("bible_notes").delete().eq("id", editing);
       if (error) { toast(explain(error), true); return; }
-      notes = notes.filter((x) => x.id !== editing); editing = null; draft = ""; sel = []; mobilePanel = false; marks(); renderPanel(); toast("Note deleted.");
+      notes = notes.filter((x) => x.id !== editing); editing = null; draft = ""; sel = []; anchor = 0; mobilePanel = false; sync(); toast("Note deleted.");
     }
     function editNote(id) {
       const x = notes.find((y) => y.id === id); if (!x) return;
-      editing = id; draft = x.body; sel = []; for (let v = x.verse_start; v <= x.verse_end; v++) sel.push(v);
-      mobilePanel = true; marks(); renderPanel();
+      editing = id; draft = x.body; sel = range(x.verse_start, x.verse_end); anchor = x.verse_start; mobilePanel = true; sync();
       const el = document.querySelector('.v[data-v="' + x.verse_start + '"]'); if (el) el.scrollIntoView({ block: "center", behavior: "smooth" });
     }
 
     // ---------- Side panel
     function renderPanel() {
       const p = $("panel"), n = cur.n, c = cur.c;
-      const rangeOf = (x) => refLabel(n, c, x.verse_start === x.verse_end ? [x.verse_start] : Array.from({ length: x.verse_end - x.verse_start + 1 }, (_, i) => x.verse_start + i));
+      const rangeOf = (x) => refLabel(n, c, range(x.verse_start, x.verse_end));
       let h = "";
       if (sel.length) {
         const cols = new Set(sel.map((v) => hl[v]).filter(Boolean)), only = cols.size === 1 ? [...cols][0] : "";
-        h += `<div class="ph"><span><b>${esc(refLabel(n, c, sel))}</b></span><button class="tb" id="selclear" aria-label="Clear selection">Clear</button></div>
+        const exc = sel.map((v) => vtext(n, c, v)).join(" ");
+        h += `<div class="ph"><span><b>${esc(refLabel(n, c, sel))}</b></span><span><button class="tb sheetx" id="sheetclose" aria-label="Close">Close</button><button class="tb" id="selclear" aria-label="Clear selection">Clear</button></span></div>
+          <p class="exc">${esc(exc)}</p>
           <div class="sw" role="group" aria-label="Highlight colour">${Object.entries(COLORS).map(([k, v]) => `<button style="background:${v}" data-color="${k}" class="${only === k ? "on" : ""}" aria-label="Highlight ${k}"></button>`).join("")}<button class="clr" id="clrhl">Remove</button></div>
           <textarea id="nbody" placeholder="Write a note on ${esc(refLabel(n, c, sel))}" aria-label="Note">${esc(draft)}</textarea>
-          <div class="row2"><button class="btn primary sm" id="savenote">${editing ? "Update note" : "Save note"}</button>${editing ? '<button class="btn ghost sm danger" id="delnote">Delete</button>' : ""}</div>`;
+          <div class="row2"><button class="btn primary sm" id="savenote">${editing ? "Update note" : "Save note"}</button>${editing ? '<button class="btn ghost sm danger" id="delnote">Delete</button>' : ""}<kbd>Ctrl/Cmd Enter</kbd></div>`;
       } else {
-        h += `<p class="hint">Tap a verse to highlight it or write a note. Tap more verses to select several.</p>`;
+        h += `<div class="ph"><span></span><button class="tb sheetx" id="sheetclose" aria-label="Close">Close</button></div><p class="hint">Tap a verse to highlight it, copy it or write a note. Shift-click to select a range.</p>`;
       }
       h += `<div class="ph"><b>Notes in ${esc(bookName(n))} ${c}</b><span>${notes.length}</span></div>`;
       h += notes.length ? `<ul class="nlist">${notes.map((x) => `<li class="nitem${editing === x.id ? " editing" : ""}" data-note="${esc(x.id)}"><div class="nr">${esc(rangeOf(x))}</div><div class="nt">${esc(x.body)}</div></li>`).join("")}</ul>` : '<p class="hint">No notes in this chapter yet.</p>';
       p.innerHTML = h; p.classList.toggle("open", mobilePanel);
-      const ta = $("nbody"); if (ta) ta.addEventListener("input", () => { draft = ta.value; });
+      const ta = $("nbody");
+      if (ta) {
+        const grow = () => { ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight, innerHeight * 0.45) + "px"; };
+        ta.addEventListener("input", () => { draft = ta.value; grow(); }); grow();
+        ta.addEventListener("keydown", (e) => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); saveNote(); } });
+      }
     }
     $("panel").addEventListener("click", (e) => {
       const t = e.target;
       if (t.closest("[data-color]")) setColor(t.closest("[data-color]").dataset.color);
       else if (t.closest("#clrhl")) clearColor();
       else if (t.closest("#selclear")) clearSel();
+      else if (t.closest("#sheetclose")) { mobilePanel = false; renderPanel(); placeFtb(); }
       else if (t.closest("#savenote")) saveNote();
       else if (t.closest("#delnote")) deleteNote();
       else if (t.closest("[data-note]")) editNote(t.closest("[data-note]").dataset.note);
     });
-    $("notesbtn").addEventListener("click", () => { mobilePanel = !mobilePanel; $("panel").classList.toggle("open", mobilePanel); });
+    $("notesbtn").addEventListener("click", () => { mobilePanel = !mobilePanel; renderPanel(); placeFtb(); });
 
     // ---------- Navigation
     const step = (d) => {
@@ -365,18 +502,31 @@
       go(n, c);
     };
     ["prev", "prev2"].forEach((id) => $(id).addEventListener("click", () => step(-1)));
-    ["next", "next2"].forEach((id) => $(id).addEventListener("click", () => step(1)));
+    ["next", "nextcard"].forEach((id) => $(id).addEventListener("click", () => step(1)));
+    const anyOverlay = () => !["pickov", "searchov", "libov", "helpov"].every((id) => $(id).hidden);
     document.addEventListener("keydown", (e) => {
-      if ($("app").hidden || e.metaKey || e.ctrlKey || e.altKey) return;
-      const tag = e.target.tagName; if (tag === "INPUT" || tag === "TEXTAREA") { if (e.key === "Escape") { closeOv(); } return; }
+      if ($("app").hidden) return;
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); openSearch(); return; }
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const tag = e.target.tagName; if (tag === "INPUT" || tag === "TEXTAREA") { if (e.key === "Escape") closeOv(); return; }
+      if (e.key === "Escape") { if (anyOverlay()) closeOv(); else clearSel(); return; }
+      if (anyOverlay()) return;
       if (e.key === "ArrowLeft") step(-1); else if (e.key === "ArrowRight") step(1);
-      else if (e.key === "Escape") { closeOv(); clearSel(); }
       else if (e.key === "/") { e.preventDefault(); openSearch(); }
+      else if (e.key === "?") { $("helpov").hidden = false; }
     });
+    // Swipe to turn the page (phones)
+    let tx = 0, ty = 0, tt = 0;
+    $("reader").addEventListener("touchstart", (e) => { const t = e.changedTouches[0]; tx = t.clientX; ty = t.clientY; tt = Date.now(); }, { passive: true });
+    $("reader").addEventListener("touchend", (e) => {
+      const t = e.changedTouches[0], dx = t.clientX - tx, dy = t.clientY - ty;
+      if (sel.length || getSelection().toString() || Date.now() - tt > 700 || Math.abs(dx) < 80 || Math.abs(dy) > 45) return;
+      step(dx < 0 ? 1 : -1);
+    }, { passive: true });
     $("fsup").addEventListener("click", () => fs(1)); $("fsdown").addEventListener("click", () => fs(-1));
     function fs(d) {
       const now = parseFloat(getComputedStyle($("text")).fontSize) || 19, next = Math.min(30, Math.max(15, Math.round(now + d)));
-      document.documentElement.style.setProperty("--fs", next + "px"); try { localStorage.setItem("bible_fs", next); } catch (e) {}
+      document.documentElement.style.setProperty("--fs", next + "px"); try { localStorage.setItem("bible_fs", next); } catch (e) {} queue();
     }
     $("theme").addEventListener("click", () => {
       const r = document.documentElement, nx = r.getAttribute("data-theme") === "dark" ? "light" : "dark";
@@ -384,7 +534,7 @@
     });
 
     // ---------- Book and chapter picker
-    const closeOv = () => { $("pickov").hidden = true; $("searchov").hidden = true; };
+    const closeOv = () => { ["pickov", "searchov", "libov", "helpov"].forEach((id) => { $(id).hidden = true; }); };
     function pickBooks() {
       const grp = (list, title) => `<div class="tgroup">${title}</div><div class="bgrid">${list.map((b) => `<button class="bk${b.n === cur.n ? " on" : ""}" data-book="${b.n}">${esc(b.name)}</button>`).join("")}</div>`;
       $("picksheet").innerHTML = `<h2>Choose a book <button class="tb" data-close="1">Close</button></h2>${grp(BOOKS.filter((b) => b.ot), "Old Testament")}${grp(BOOKS.filter((b) => !b.ot), "New Testament")}`;
@@ -401,9 +551,10 @@
       else if (t.closest("[data-book]")) { const n = Number(t.closest("[data-book]").dataset.book); if (BOOKS[n - 1].chapters === 1) { closeOv(); go(n, 1); } else pickChapters(n); }
       else if (t.closest("[data-c]")) { const b = t.closest("[data-c]"); closeOv(); go(Number(b.dataset.n), Number(b.dataset.c)); }
     });
+    $("helpov").addEventListener("click", (e) => { if (e.target === $("helpov") || e.target.closest("[data-closehelp]")) closeOv(); });
 
     // ---------- Search and "go to"
-    let index = null, sTimer;
+    let index = null, sTimer, act = -1;
     const keyOf = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
     async function buildIndex() {
       if (index) return index;
@@ -419,8 +570,12 @@
       const k = keyOf(m[1]); if (!k) return [];
       return BOOKS.filter((b) => keyOf(b.name).startsWith(k)).slice(0, 5).map((b) => ({ n: b.n, c: Math.min(Number(m[2]) || 1, b.chapters), v: Number(m[3]) || 0 }));
     }
+    function setAct(i) {
+      const items = [...$("res").querySelectorAll("[data-go]")]; if (!items.length) { act = -1; return; }
+      act = (i + items.length) % items.length; items.forEach((el, k) => el.classList.toggle("act", k === act)); items[act].scrollIntoView({ block: "nearest" });
+    }
     async function runSearch() {
-      const q = $("sq").value.trim(), out = $("res"); if (!q) { out.innerHTML = ""; return; }
+      const q = $("sq").value.trim(), out = $("res"); act = -1; if (!q) { out.innerHTML = ""; return; }
       let html = parseRef(q).map((r) => `<li class="go" data-go="${r.n}.${r.c}.${r.v}"><div class="rr">Go to</div><div class="rt">${esc(refLabel(r.n, r.c, r.v ? [r.v] : []))}</div></li>`).join("");
       if (q.length >= 3) {
         const idx = await buildIndex(); if ($("sq").value.trim() !== q) return;
@@ -431,8 +586,9 @@
         html += `<li class="rt" style="cursor:default">${hits.length} ${hits.length === 1 ? "verse" : "verses"}${hits.length > 100 ? " (showing 100)" : ""}</li>`;
       }
       out.innerHTML = html || '<li class="rt" style="cursor:default">No matches.</li>';
+      setAct(0);
     }
-    function openSearch() { $("searchov").hidden = false; $("sq").focus(); $("sq").select(); }
+    function openSearch() { closeOv(); $("searchov").hidden = false; $("sq").focus(); $("sq").select(); }
     $("searchbtn").addEventListener("click", openSearch);
     $("searchclose").addEventListener("click", closeOv);
     $("searchov").addEventListener("click", (e) => {
@@ -441,7 +597,49 @@
       const [n, c, v] = li.dataset.go.split(".").map(Number); closeOv(); go(n, c, v);
     });
     $("sq").addEventListener("input", () => { clearTimeout(sTimer); sTimer = setTimeout(runSearch, 180); });
-    $("sq").addEventListener("keydown", (e) => { if (e.key === "Enter") { const first = $("res").querySelector("[data-go]"); if (first) first.click(); } });
+    $("sq").addEventListener("keydown", (e) => {
+      if (e.key === "ArrowDown") { e.preventDefault(); setAct(act + 1); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); setAct(act - 1); }
+      else if (e.key === "Enter") { const items = $("res").querySelectorAll("[data-go]"); if (items[Math.max(act, 0)]) items[Math.max(act, 0)].click(); }
+    });
+
+    // ---------- Library: all my notes and highlights
+    let lib = { tab: "notes", color: "all", q: "", notes: [], hls: [] };
+    async function openLibrary() {
+      closeOv(); $("libov").hidden = false; $("libsheet").innerHTML = '<h2>My notes and highlights</h2><p class="hint">Loading…</p>';
+      const [n, h] = await Promise.all([
+        sb.from("bible_notes").select("*").order("book").order("chapter").order("verse_start"),
+        sb.from("bible_highlights").select("*").order("book").order("chapter").order("verse")
+      ]);
+      if (n.error || h.error) { $("libsheet").innerHTML = '<h2>My notes and highlights <button class="tb" data-closelib="1">Close</button></h2><p class="hint">' + esc(explain(n.error || h.error)) + "</p>"; return; }
+      lib.notes = n.data; lib.hls = h.data;
+      await Promise.all([...new Set([...lib.notes, ...lib.hls].map((r) => r.book))].map(loadBook));
+      renderLib();
+    }
+    function renderLib() {
+      const q = lib.q.toLowerCase();
+      const ns = lib.notes.filter((x) => !q || (x.body + " " + refLabel(x.book, x.chapter, [x.verse_start])).toLowerCase().includes(q));
+      const hs = lib.hls.filter((x) => (lib.color === "all" || x.color === lib.color) && (!q || vtext(x.book, x.chapter, x.verse).toLowerCase().includes(q)));
+      let body = "";
+      if (lib.tab === "notes") {
+        body = ns.length ? `<ul class="res">${ns.map((x) => `<li data-go="${x.book}.${x.chapter}.${x.verse_start}"><div class="rr">${esc(refLabel(x.book, x.chapter, range(x.verse_start, x.verse_end)))}</div><div class="rn">${esc(x.body)}</div><div class="rt">${esc(range(x.verse_start, x.verse_end).map((v) => vtext(x.book, x.chapter, v)).join(" ").slice(0, 160))}</div></li>`).join("")}</ul>` : `<p class="hint">${lib.notes.length ? "No notes match." : "No notes yet. Select a verse and press Note."}</p>`;
+      } else {
+        body = `<div class="tabs2">${["all", ...Object.keys(COLORS)].map((c) => `<button class="chip2" data-lcolor="${c}" aria-pressed="${lib.color === c}">${c === "all" ? "All colours" : `<span class="bar" style="background:${COLORS[c]}"></span>${c}`}</button>`).join("")}</div>`
+          + (hs.length ? `<ul class="res">${hs.map((x) => `<li data-go="${x.book}.${x.chapter}.${x.verse}"><div class="rr"><span class="bar" style="background:${COLORS[x.color]}"></span>${esc(refLabel(x.book, x.chapter, [x.verse]))}</div><div class="rt">${esc(vtext(x.book, x.chapter, x.verse))}</div></li>`).join("")}</ul>` : `<p class="hint">${lib.hls.length ? "No highlights match." : "No highlights yet. Select a verse and pick a colour."}</p>`);
+      }
+      $("libsheet").innerHTML = `<h2>My notes and highlights <button class="tb" data-closelib="1">Close</button></h2>
+        <div class="tabs2"><button class="chip2" data-ltab="notes" aria-pressed="${lib.tab === "notes"}">Notes (${lib.notes.length})</button><button class="chip2" data-ltab="hl" aria-pressed="${lib.tab === "hl"}">Highlights (${lib.hls.length})</button></div>
+        <input class="sinput" id="libq" type="search" placeholder="Filter" value="${esc(lib.q)}" aria-label="Filter" style="margin-bottom:6px">${body}`;
+      const qi = $("libq"); if (qi) { qi.addEventListener("input", () => { lib.q = qi.value; const pos = qi.selectionStart; renderLib(); const n2 = $("libq"); n2.focus(); n2.setSelectionRange(pos, pos); }); }
+    }
+    $("libbtn").addEventListener("click", openLibrary);
+    $("libov").addEventListener("click", (e) => {
+      const t = e.target;
+      if (t === $("libov") || t.closest("[data-closelib]")) closeOv();
+      else if (t.closest("[data-ltab]")) { lib.tab = t.closest("[data-ltab]").dataset.ltab; renderLib(); }
+      else if (t.closest("[data-lcolor]")) { lib.color = t.closest("[data-lcolor]").dataset.lcolor; renderLib(); }
+      else if (t.closest("[data-go]")) { const [n, c, v] = t.closest("[data-go]").dataset.go.split(".").map(Number); closeOv(); go(n, c, v); }
+    });
   </script>
 </body>
 </html>
