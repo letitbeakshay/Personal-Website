@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Bible</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#161616">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Geist:wght@400..600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>try{var t=localStorage.getItem("theme");if(!t)t="dark";document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+  <link rel="stylesheet" href="../assets/site.css">
+  <style>
+    :root { --scripture:"Source Serif 4", Georgia, "Times New Roman", serif; --topbar:56px; --panelw:360px; }
+    html { scroll-behavior:auto; }
+    body { margin:0; background:var(--bg); color:var(--fg); }
+    [hidden] { display:none !important; }
+    button { font:inherit; }
+
+    /* Login */
+    .gate { min-height:100vh; display:grid; place-items:center; padding:20px; }
+    .gate form { width:100%; max-width:340px; display:grid; gap:14px; }
+    .gate h1 { margin:0 0 4px; font:400 32px/1.1 var(--display); }
+    .gate p { margin:0; color:var(--muted); }
+    .gate input { width:100%; padding:11px 13px; border:1px solid var(--line-2); border-radius:9px; background:var(--panel); color:var(--fg); font:inherit; }
+    .msg { min-height:1.3em; font-size:14px; color:var(--muted); }
+    .msg.err { color:#e5484d; } .msg.ok { color:var(--ok); }
+
+    /* Top bar */
+    .topbar { position:sticky; top:0; z-index:20; height:var(--topbar); display:flex; align-items:center; gap:6px; padding:0 14px; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+    .tb { height:36px; min-width:36px; padding:0 10px; border:1px solid transparent; border-radius:9px; background:transparent; color:var(--muted); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:14px; }
+    .tb:hover { color:var(--fg); background:var(--panel-2); }
+    .tb { white-space:nowrap; }
+    .tb svg { width:18px; height:18px; }
+    .where { font:600 16px var(--sans); color:var(--fg); padding:0 12px; border-color:var(--line); }
+    .where small { font:400 12px var(--mono); color:var(--faint); }
+    .spacer { flex:1; }
+    .brand { font:400 20px var(--display); margin-right:6px; color:var(--fg); }
+
+    /* Layout */
+    .app { display:grid; grid-template-columns:minmax(0,1fr) var(--panelw); min-height:calc(100vh - var(--topbar)); }
+    .reader { padding:34px clamp(16px,4vw,48px) 140px; }
+    .page { max-width:680px; margin:0 auto; }
+    .chead { margin:0 0 24px; }
+    .chead h1 { margin:0; font:400 clamp(30px,4vw,40px)/1.1 var(--display); }
+    .chead p { margin:6px 0 0; color:var(--faint); font:400 13px var(--mono); }
+
+    /* Scripture */
+    .text { font-family:var(--scripture); font-size:var(--fs,19px); line-height:1.85; font-weight:400; }
+    .para { margin:0 0 1.1em; }
+    .v { cursor:pointer; border-radius:3px; -webkit-box-decoration-break:clone; box-decoration-break:clone; transition:background .12s; }
+    .v:hover { background:var(--tint); }
+    .vn { font:500 .6em/1 var(--sans); color:var(--faint); margin-right:.35em; vertical-align:.55em; user-select:none; }
+    .v i { font-style:italic; opacity:.88; }
+    .v.sel { box-shadow:0 2px 0 var(--accent); background:var(--tint); }
+    .v.hasnote .vn::after { content:""; display:inline-block; width:5px; height:5px; border-radius:50%; background:var(--accent); margin-left:3px; vertical-align:.1em; }
+    .v.hl-yellow { background:rgba(245,197,66,.28); } .v.hl-green { background:rgba(76,199,154,.26); }
+    .v.hl-blue { background:rgba(91,157,255,.28); } .v.hl-pink { background:rgba(240,111,168,.28); } .v.hl-orange { background:rgba(255,122,69,.30); }
+    [data-theme="light"] .v.hl-yellow { background:rgba(245,197,66,.42); } [data-theme="light"] .v.hl-green { background:rgba(76,199,154,.38); }
+    [data-theme="light"] .v.hl-blue { background:rgba(91,157,255,.36); } [data-theme="light"] .v.hl-pink { background:rgba(240,111,168,.34); } [data-theme="light"] .v.hl-orange { background:rgba(255,122,69,.36); }
+    .v.sel.hl-yellow, .v.sel.hl-green, .v.sel.hl-blue, .v.sel.hl-pink, .v.sel.hl-orange { box-shadow:0 2px 0 var(--accent); }
+    .pager { display:flex; justify-content:space-between; margin-top:34px; padding-top:18px; border-top:1px solid var(--line); }
+    .credit { margin-top:26px; color:var(--faint); font-size:12.5px; }
+
+    /* Side panel */
+    .panel { position:sticky; top:var(--topbar); height:calc(100vh - var(--topbar)); overflow:auto; border-left:1px solid var(--line); background:var(--panel); padding:18px 18px 40px; }
+    .ph { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:0 0 10px; font:600 13px var(--sans); color:var(--muted); }
+    .ph b { color:var(--fg); font-weight:600; }
+    .hint { color:var(--faint); font-size:14px; margin:0 0 16px; }
+    .sw { display:flex; gap:8px; align-items:center; margin-bottom:14px; flex-wrap:wrap; }
+    .sw button { width:28px; height:28px; border-radius:50%; border:2px solid transparent; cursor:pointer; padding:0; }
+    .sw button:hover { transform:scale(1.1); } .sw button.on { border-color:var(--fg); }
+    .sw .clr { width:auto; border-radius:8px; padding:0 10px; background:transparent; border:1px solid var(--line-2); color:var(--muted); font-size:12.5px; height:28px; }
+    .panel textarea { width:100%; min-height:110px; resize:vertical; padding:11px 12px; border:1px solid var(--line-2); border-radius:10px; background:var(--bg); color:var(--fg); font:inherit; font-size:14.5px; line-height:1.55; }
+    .row2 { display:flex; gap:8px; margin:10px 0 22px; }
+    .btn.sm { padding:7px 14px; font-size:13.5px; border-radius:8px; }
+    .btn.danger:hover { border-color:#e5484d; color:#e5484d; }
+    .nlist { list-style:none; margin:0; padding:0; border-top:1px solid var(--line); }
+    .nitem { padding:12px 2px; border-bottom:1px solid var(--line); cursor:pointer; }
+    .nitem:hover .nt { color:var(--fg); }
+    .nitem .nr { font:500 12px var(--mono); color:var(--accent); }
+    .nitem .nt { margin:3px 0 0; color:var(--muted); font-size:14px; white-space:pre-wrap; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
+    .nitem.editing { background:var(--tint); margin:0 -8px; padding:12px 8px; border-radius:8px; }
+
+    /* Overlays */
+    .overlay { position:fixed; inset:0; z-index:40; background:rgba(0,0,0,.55); display:grid; place-items:start center; padding:6vh 14px; overflow:auto; }
+    .sheet { width:100%; max-width:640px; background:var(--panel); border:1px solid var(--line-2); border-radius:16px; padding:20px; box-shadow:0 30px 80px rgba(0,0,0,.5); }
+    .sheet h2 { margin:0 0 14px; font:600 15px var(--sans); display:flex; justify-content:space-between; align-items:center; }
+    .tgroup { font:600 12px var(--sans); color:var(--faint); margin:16px 0 8px; }
+    .bgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:6px; }
+    .bk { text-align:left; padding:8px 10px; border-radius:8px; border:1px solid var(--line); background:transparent; color:var(--fg); cursor:pointer; font-size:14px; }
+    .bk:hover { border-color:var(--line-2); background:var(--panel-2); } .bk.on { border-color:var(--accent); color:var(--accent); }
+    .cgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(52px,1fr)); gap:6px; }
+    .cgrid .bk { text-align:center; padding:9px 0; font-family:var(--mono); }
+    .sinput { width:100%; padding:12px 14px; border:1px solid var(--line-2); border-radius:10px; background:var(--bg); color:var(--fg); font:inherit; font-size:16px; }
+    .res { list-style:none; margin:12px 0 0; padding:0; max-height:55vh; overflow:auto; }
+    .res li { padding:10px 6px; border-bottom:1px solid var(--line); cursor:pointer; border-radius:6px; }
+    .res li:hover, .res li.go { background:var(--tint); }
+    .res .rr { font:500 12.5px var(--mono); color:var(--accent); }
+    .res .rt { margin:2px 0 0; font-family:var(--scripture); font-size:15px; color:var(--muted); line-height:1.5; }
+    .res mark { background:rgba(245,197,66,.35); color:var(--fg); border-radius:2px; }
+    .toast { position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:60; background:var(--fg); color:var(--bg); padding:9px 16px; border-radius:10px; font-size:14px; box-shadow:0 10px 30px rgba(0,0,0,.4); }
+    .toast.err { background:#e5484d; color:#fff; }
+
+    /* Mobile: panel becomes a bottom sheet */
+    @media (max-width:900px) {
+      .app { grid-template-columns:1fr; }
+      .panel { position:fixed; left:0; right:0; bottom:0; top:auto; height:auto; max-height:58vh; z-index:30; border-left:0; border-top:1px solid var(--line-2); border-radius:16px 16px 0 0; transform:translateY(105%); transition:transform .2s; box-shadow:0 -20px 50px rgba(0,0,0,.4); padding-bottom:max(40px, env(safe-area-inset-bottom)); }
+      .panel.open { transform:none; }
+      .reader { padding-bottom:40vh; }
+      .brand { display:none; }
+    }
+    @media (max-width:560px) { .fs { display:none; } .topbar { padding:0 8px; gap:2px; } .where { padding:0 10px; } }
+    @media (min-width:901px) { .only-m { display:none !important; } }
+    @media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
+  </style>
+</head>
+<body>
+
+  <!-- Login -->
+  <section class="gate" id="gate">
+    <form id="loginform" autocomplete="off">
+      <div><h1>Bible</h1><p>Enter your password to continue.</p></div>
+      <input id="pw" type="password" placeholder="Password" required autocomplete="current-password" aria-label="Password" autofocus>
+      <button class="btn primary" type="submit" id="loginbtn" style="justify-content:center">Open</button>
+      <div class="msg" id="loginmsg" role="status"></div>
+    </form>
+  </section>
+
+  <!-- App -->
+  <div id="app" hidden>
+    <header class="topbar">
+      <a class="brand" href="../" title="Back to the site">Bible</a>
+      <button class="tb" id="prev" aria-label="Previous chapter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <button class="tb where" id="where" aria-label="Choose book and chapter"><span id="wheretext">John 3</span> <small id="trname">KJV</small></button>
+      <button class="tb" id="next" aria-label="Next chapter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+      <span class="spacer"></span>
+      <button class="tb" id="searchbtn" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button>
+      <button class="tb fs" id="fsdown" aria-label="Smaller text">A-</button>
+      <button class="tb fs" id="fsup" aria-label="Larger text">A+</button>
+      <button class="tb only-m" id="notesbtn" aria-label="Notes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7z"/><path d="M10 12h5M10 16h5"/></svg></button>
+      <button class="tb" id="theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 4v16" /></svg></button>
+      <button class="tb" id="signout" aria-label="Sign out" title="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5H6v14h4"/><path d="M14 8l4 4-4 4"/><path d="M18 12H9"/></svg></button>
+    </header>
+
+    <div class="app">
+      <main class="reader" id="reader">
+        <div class="page">
+          <div class="chead"><h1 id="ctitle"></h1><p id="cmeta"></p></div>
+          <div class="text" id="text" aria-live="polite"></div>
+          <div class="pager"><button class="btn ghost sm" id="prev2">← Previous</button><button class="btn ghost sm" id="next2">Next →</button></div>
+          <p class="credit" id="credit">King James Version (1769). Public domain.</p>
+        </div>
+      </main>
+      <aside class="panel" id="panel" aria-label="Notes and highlights"></aside>
+    </div>
+  </div>
+
+  <div class="overlay" id="pickov" hidden><div class="sheet" id="picksheet" role="dialog" aria-label="Choose book and chapter"></div></div>
+  <div class="overlay" id="searchov" hidden>
+    <div class="sheet" role="dialog" aria-label="Search">
+      <h2>Search <button class="tb" id="searchclose" aria-label="Close">Close</button></h2>
+      <input class="sinput" id="sq" type="search" placeholder='Search words, or go to a verse, e.g. "john 3:16"' aria-label="Search the Bible" autocomplete="off">
+      <ul class="res" id="res"></ul>
+    </div>
+  </div>
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="../assets/config.js"></script>
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm";
+    const C = window.CONFIG;
+    const sb = createClient(C.SUPABASE_URL, C.SUPABASE_KEY);
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const COLORS = { yellow: "#f5c542", green: "#4cc79a", blue: "#5b9dff", pink: "#f06fa8", orange: "#ff7a45" };
+    // Translations. To add NKJV later (once licensed), add an entry here with its own data folder or loader.
+    const TR = { kjv: { id: "kjv", short: "KJV", dir: "data/kjv/", credit: "King James Version (1769). Public domain." } };
+    const tr = TR.kjv;
+
+    let BOOKS = [], cache = {}, cur = { n: 1, c: 1 }, sel = [], hl = {}, notes = [], editing = null, draft = "", mobilePanel = false, token = 0, toastT;
+
+    const toast = (m, err) => { const t = $("toast"); t.textContent = m; t.className = "toast" + (err ? " err" : ""); t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, err ? 5000 : 1800); };
+    const explain = (e) => /relation .* does not exist|42P01|schema cache/i.test(e.message || "") ? "The Bible tables are missing in the database." : /row-level|42501|permission|JWT/i.test(e.message || "") ? "Not allowed. Please sign in again." : (e.message || "Something went wrong.");
+
+    // ---------- Login
+    let fails = 0, lockUntil = 0;
+    async function showFor(session) {
+      $("gate").hidden = !!session; $("app").hidden = !session;
+      if (session) start(); else setTimeout(() => $("pw").focus(), 50);
+    }
+    $("loginform").addEventListener("submit", async (e) => {
+      e.preventDefault(); const m = $("loginmsg");
+      if (Date.now() < lockUntil) { m.textContent = "Too many tries. Wait a moment."; m.className = "msg err"; return; }
+      $("loginbtn").disabled = true; m.textContent = "Checking…"; m.className = "msg";
+      const { data, error } = await sb.auth.signInWithPassword({ email: C.ADMIN_EMAIL, password: $("pw").value });
+      $("loginbtn").disabled = false;
+      if (error || !data.session) { if (++fails >= 5) { lockUntil = Date.now() + 30000; fails = 0; } m.textContent = "That is not the right password."; m.className = "msg err"; $("pw").select(); return; }
+      $("pw").value = ""; m.textContent = ""; showFor(data.session);
+    });
+    $("signout").addEventListener("click", async () => { await sb.auth.signOut(); sel = []; hl = {}; notes = []; showFor(null); });
+    sb.auth.getSession().then(({ data }) => showFor(data.session));
+
+    // ---------- Data
+    async function loadBook(n) {
+      if (!cache[n]) { const r = await fetch(tr.dir + n + ".json"); if (!r.ok) throw new Error("Could not load the text."); cache[n] = await r.json(); }
+      return cache[n];
+    }
+    const bookName = (n) => (BOOKS[n - 1] || {}).name || "";
+    const fmt = (t) => esc(t).replace(/\[([^\]]+)\]/g, "<i>$1</i>");
+    function refLabel(n, c, vs) {
+      vs = [...vs].sort((a, b) => a - b); if (!vs.length) return bookName(n) + " " + c;
+      const parts = []; let s = vs[0], p = vs[0];
+      for (let i = 1; i <= vs.length; i++) { if (vs[i] === p + 1) { p = vs[i]; continue; } parts.push(s === p ? "" + s : s + "–" + p); s = vs[i]; p = vs[i]; }
+      return bookName(n) + " " + c + ":" + parts.join(", ");
+    }
+
+    async function start() {
+      if (!BOOKS.length) {
+        const r = await fetch(tr.dir + "books.json"); BOOKS = (await r.json()).books;
+      }
+      const h = location.hash.replace("#", "").split(".").map(Number);
+      let n = 1, c = 1, v = 0;
+      if (h[0] >= 1 && h[0] <= 66) { n = h[0]; c = h[1] || 1; v = h[2] || 0; }
+      else { try { const l = JSON.parse(localStorage.getItem("bible_pos") || "null"); if (l && l.n >= 1 && l.n <= 66) { n = l.n; c = l.c || 1; } } catch (e) {} }
+      try { const fs = Number(localStorage.getItem("bible_fs")); if (fs >= 15 && fs <= 30) document.documentElement.style.setProperty("--fs", fs + "px"); } catch (e) {}
+      go(n, c, v);
+    }
+
+    // Opening a verse link (#43.3.16) while the app is already open jumps there.
+    addEventListener("hashchange", () => {
+      if ($("app").hidden || !BOOKS.length) return;
+      const h = location.hash.replace("#", "").split(".").map(Number);
+      if (h[0] >= 1 && h[0] <= 66 && (h[0] !== cur.n || (h[1] || 1) !== cur.c || h[2])) go(h[0], h[1] || 1, h[2] || 0);
+    });
+
+    async function go(n, c, verse) {
+      const my = ++token;
+      let b; try { b = await loadBook(n); } catch (e) { toast(explain(e), true); return; }
+      c = Math.min(Math.max(1, c), b.chapters.length);
+      cur = { n, c }; sel = []; editing = null; draft = ""; hl = {}; notes = [];
+      try { localStorage.setItem("bible_pos", JSON.stringify(cur)); } catch (e) {}
+      history.replaceState(null, "", "#" + n + "." + c + (verse ? "." + verse : ""));
+      $("wheretext").textContent = b.name + " " + c; $("trname").textContent = tr.short;
+      $("ctitle").textContent = b.name + " " + c; $("cmeta").textContent = b.chapters[c - 1].length + " verses";
+      document.title = b.name + " " + c + " | Bible";
+      let html = "", open = false;
+      b.chapters[c - 1].forEach((t, i) => {
+        const v = i + 1, para = t.charAt(0) === "¶"; if (para) t = t.slice(1);
+        if (!open || para) { if (open) html += "</p>"; html += '<p class="para">'; open = true; }
+        html += `<span class="v" data-v="${v}"><sup class="vn">${v}</sup>${fmt(t)} </span>`;
+      });
+      $("text").dataset.ready = "0"; $("text").innerHTML = html + "</p>"; $("credit").textContent = tr.credit;
+      $("reader").scrollTop = 0; window.scrollTo(0, 0);
+      renderPanel();
+      if (verse) { const el = document.querySelector('.v[data-v="' + verse + '"]'); if (el) { sel = [verse]; marks(); renderPanel(); setTimeout(() => el.scrollIntoView({ block: "center" }), 30); } }
+      // Your highlights and notes for this chapter
+      const [h, nn] = await Promise.all([
+        sb.from("bible_highlights").select("verse,color").eq("book", n).eq("chapter", c),
+        sb.from("bible_notes").select("*").eq("book", n).eq("chapter", c).order("verse_start").order("created_at")
+      ]);
+      if (my !== token) return;
+      $("text").dataset.ready = "1";
+      if (h.error || nn.error) { toast(explain(h.error || nn.error), true); return; }
+      hl = {}; h.data.forEach((r) => { hl[r.verse] = r.color; }); notes = nn.data;
+      marks(); renderPanel();
+    }
+
+    function marks() {
+      document.querySelectorAll("#text .v").forEach((el) => {
+        const v = Number(el.dataset.v);
+        el.className = "v" + (hl[v] ? " hl-" + hl[v] : "") + (sel.includes(v) ? " sel" : "") + (notes.some((x) => v >= x.verse_start && v <= x.verse_end) ? " hasnote" : "");
+      });
+    }
+
+    // ---------- Selection
+    $("text").addEventListener("click", (e) => {
+      const el = e.target.closest(".v"); if (!el || $("text").dataset.ready !== "1") return; const v = Number(el.dataset.v);
+      sel = sel.includes(v) ? sel.filter((x) => x !== v) : [...sel, v].sort((a, b) => a - b);
+      if (!sel.length) editing = null;
+      if (sel.length) mobilePanel = true; else mobilePanel = false;
+      marks(); renderPanel();
+    });
+    function clearSel() { sel = []; editing = null; draft = ""; mobilePanel = false; marks(); renderPanel(); }
+
+    // ---------- Highlights
+    async function setColor(color) {
+      if (!sel.length) return;
+      const vs = [...sel], rows = vs.map((verse) => ({ book: cur.n, chapter: cur.c, verse, color, updated_at: new Date().toISOString() }));
+      vs.forEach((v) => { hl[v] = color; }); marks(); renderPanel();
+      const { error } = await sb.from("bible_highlights").upsert(rows, { onConflict: "book,chapter,verse" });
+      if (error) { toast(explain(error), true); go(cur.n, cur.c); }
+    }
+    async function clearColor() {
+      const vs = sel.filter((v) => hl[v]); if (!vs.length) return;
+      vs.forEach((v) => { delete hl[v]; }); marks(); renderPanel();
+      const { error } = await sb.from("bible_highlights").delete().eq("book", cur.n).eq("chapter", cur.c).in("verse", vs);
+      if (error) { toast(explain(error), true); go(cur.n, cur.c); }
+    }
+
+    // ---------- Notes
+    async function saveNote() {
+      const body = ($("nbody").value || "").trim(); if (!body) { toast("Write something first.", true); return; }
+      let res;
+      if (editing) {
+        res = await sb.from("bible_notes").update({ body, updated_at: new Date().toISOString() }).eq("id", editing).select().single();
+        if (!res.error) notes = notes.map((x) => (x.id === editing ? res.data : x));
+      } else {
+        if (!sel.length) { toast("Tap a verse first.", true); return; }
+        res = await sb.from("bible_notes").insert({ book: cur.n, chapter: cur.c, verse_start: Math.min(...sel), verse_end: Math.max(...sel), body }).select().single();
+        if (!res.error) notes = [...notes, res.data].sort((a, b) => a.verse_start - b.verse_start);
+      }
+      if (res.error) { toast(explain(res.error), true); return; }
+      toast("Note saved."); editing = null; draft = ""; sel = []; mobilePanel = false; marks(); renderPanel();
+    }
+    async function deleteNote() {
+      if (!editing || !confirm("Delete this note? This cannot be undone.")) return;
+      const { error } = await sb.from("bible_notes").delete().eq("id", editing);
+      if (error) { toast(explain(error), true); return; }
+      notes = notes.filter((x) => x.id !== editing); editing = null; draft = ""; sel = []; mobilePanel = false; marks(); renderPanel(); toast("Note deleted.");
+    }
+    function editNote(id) {
+      const x = notes.find((y) => y.id === id); if (!x) return;
+      editing = id; draft = x.body; sel = []; for (let v = x.verse_start; v <= x.verse_end; v++) sel.push(v);
+      mobilePanel = true; marks(); renderPanel();
+      const el = document.querySelector('.v[data-v="' + x.verse_start + '"]'); if (el) el.scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+
+    // ---------- Side panel
+    function renderPanel() {
+      const p = $("panel"), n = cur.n, c = cur.c;
+      const rangeOf = (x) => refLabel(n, c, x.verse_start === x.verse_end ? [x.verse_start] : Array.from({ length: x.verse_end - x.verse_start + 1 }, (_, i) => x.verse_start + i));
+      let h = "";
+      if (sel.length) {
+        const cols = new Set(sel.map((v) => hl[v]).filter(Boolean)), only = cols.size === 1 ? [...cols][0] : "";
+        h += `<div class="ph"><span><b>${esc(refLabel(n, c, sel))}</b></span><button class="tb" id="selclear" aria-label="Clear selection">Clear</button></div>
+          <div class="sw" role="group" aria-label="Highlight colour">${Object.entries(COLORS).map(([k, v]) => `<button style="background:${v}" data-color="${k}" class="${only === k ? "on" : ""}" aria-label="Highlight ${k}"></button>`).join("")}<button class="clr" id="clrhl">Remove</button></div>
+          <textarea id="nbody" placeholder="Write a note on ${esc(refLabel(n, c, sel))}" aria-label="Note">${esc(draft)}</textarea>
+          <div class="row2"><button class="btn primary sm" id="savenote">${editing ? "Update note" : "Save note"}</button>${editing ? '<button class="btn ghost sm danger" id="delnote">Delete</button>' : ""}</div>`;
+      } else {
+        h += `<p class="hint">Tap a verse to highlight it or write a note. Tap more verses to select several.</p>`;
+      }
+      h += `<div class="ph"><b>Notes in ${esc(bookName(n))} ${c}</b><span>${notes.length}</span></div>`;
+      h += notes.length ? `<ul class="nlist">${notes.map((x) => `<li class="nitem${editing === x.id ? " editing" : ""}" data-note="${esc(x.id)}"><div class="nr">${esc(rangeOf(x))}</div><div class="nt">${esc(x.body)}</div></li>`).join("")}</ul>` : '<p class="hint">No notes in this chapter yet.</p>';
+      p.innerHTML = h; p.classList.toggle("open", mobilePanel);
+      const ta = $("nbody"); if (ta) ta.addEventListener("input", () => { draft = ta.value; });
+    }
+    $("panel").addEventListener("click", (e) => {
+      const t = e.target;
+      if (t.closest("[data-color]")) setColor(t.closest("[data-color]").dataset.color);
+      else if (t.closest("#clrhl")) clearColor();
+      else if (t.closest("#selclear")) clearSel();
+      else if (t.closest("#savenote")) saveNote();
+      else if (t.closest("#delnote")) deleteNote();
+      else if (t.closest("[data-note]")) editNote(t.closest("[data-note]").dataset.note);
+    });
+    $("notesbtn").addEventListener("click", () => { mobilePanel = !mobilePanel; $("panel").classList.toggle("open", mobilePanel); });
+
+    // ---------- Navigation
+    const step = (d) => {
+      let n = cur.n, c = cur.c + d;
+      if (c < 1) { if (n === 1) return; n--; c = BOOKS[n - 1].chapters; }
+      else if (c > BOOKS[n - 1].chapters) { if (n === 66) return; n++; c = 1; }
+      go(n, c);
+    };
+    ["prev", "prev2"].forEach((id) => $(id).addEventListener("click", () => step(-1)));
+    ["next", "next2"].forEach((id) => $(id).addEventListener("click", () => step(1)));
+    document.addEventListener("keydown", (e) => {
+      if ($("app").hidden || e.metaKey || e.ctrlKey || e.altKey) return;
+      const tag = e.target.tagName; if (tag === "INPUT" || tag === "TEXTAREA") { if (e.key === "Escape") { closeOv(); } return; }
+      if (e.key === "ArrowLeft") step(-1); else if (e.key === "ArrowRight") step(1);
+      else if (e.key === "Escape") { closeOv(); clearSel(); }
+      else if (e.key === "/") { e.preventDefault(); openSearch(); }
+    });
+    $("fsup").addEventListener("click", () => fs(1)); $("fsdown").addEventListener("click", () => fs(-1));
+    function fs(d) {
+      const now = parseFloat(getComputedStyle($("text")).fontSize) || 19, next = Math.min(30, Math.max(15, Math.round(now + d)));
+      document.documentElement.style.setProperty("--fs", next + "px"); try { localStorage.setItem("bible_fs", next); } catch (e) {}
+    }
+    $("theme").addEventListener("click", () => {
+      const r = document.documentElement, nx = r.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      r.setAttribute("data-theme", nx); try { localStorage.setItem("theme", nx); } catch (e) {}
+    });
+
+    // ---------- Book and chapter picker
+    const closeOv = () => { $("pickov").hidden = true; $("searchov").hidden = true; };
+    function pickBooks() {
+      const grp = (list, title) => `<div class="tgroup">${title}</div><div class="bgrid">${list.map((b) => `<button class="bk${b.n === cur.n ? " on" : ""}" data-book="${b.n}">${esc(b.name)}</button>`).join("")}</div>`;
+      $("picksheet").innerHTML = `<h2>Choose a book <button class="tb" data-close="1">Close</button></h2>${grp(BOOKS.filter((b) => b.ot), "Old Testament")}${grp(BOOKS.filter((b) => !b.ot), "New Testament")}`;
+    }
+    function pickChapters(n) {
+      const b = BOOKS[n - 1];
+      $("picksheet").innerHTML = `<h2><span>${esc(b.name)}</span> <span><button class="tb" data-back="1">Books</button> <button class="tb" data-close="1">Close</button></span></h2><div class="cgrid">${Array.from({ length: b.chapters }, (_, i) => `<button class="bk${n === cur.n && i + 1 === cur.c ? " on" : ""}" data-n="${n}" data-c="${i + 1}">${i + 1}</button>`).join("")}</div>`;
+    }
+    $("where").addEventListener("click", () => { pickBooks(); $("pickov").hidden = false; });
+    $("pickov").addEventListener("click", (e) => {
+      const t = e.target;
+      if (t === $("pickov") || t.closest("[data-close]")) closeOv();
+      else if (t.closest("[data-back]")) pickBooks();
+      else if (t.closest("[data-book]")) { const n = Number(t.closest("[data-book]").dataset.book); if (BOOKS[n - 1].chapters === 1) { closeOv(); go(n, 1); } else pickChapters(n); }
+      else if (t.closest("[data-c]")) { const b = t.closest("[data-c]"); closeOv(); go(Number(b.dataset.n), Number(b.dataset.c)); }
+    });
+
+    // ---------- Search and "go to"
+    let index = null, sTimer;
+    const keyOf = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+    async function buildIndex() {
+      if (index) return index;
+      $("res").innerHTML = '<li class="rt">Loading the Bible…</li>';
+      await Promise.all(BOOKS.map((b) => loadBook(b.n)));
+      index = []; BOOKS.forEach((b) => cache[b.n].chapters.forEach((vs, ci) => vs.forEach((t, vi) => {
+        const text = t.replace(/^¶/, ""); index.push({ n: b.n, c: ci + 1, v: vi + 1, text, lc: text.toLowerCase().replace(/[\[\]]/g, "") });
+      })));
+      return index;
+    }
+    function parseRef(q) {
+      const m = q.trim().match(/^((?:[1-3]\s*)?[a-z][a-z .]*?)\s*(\d+)?(?:\s*[:.]\s*(\d+))?$/i); if (!m) return [];
+      const k = keyOf(m[1]); if (!k) return [];
+      return BOOKS.filter((b) => keyOf(b.name).startsWith(k)).slice(0, 5).map((b) => ({ n: b.n, c: Math.min(Number(m[2]) || 1, b.chapters), v: Number(m[3]) || 0 }));
+    }
+    async function runSearch() {
+      const q = $("sq").value.trim(), out = $("res"); if (!q) { out.innerHTML = ""; return; }
+      let html = parseRef(q).map((r) => `<li class="go" data-go="${r.n}.${r.c}.${r.v}"><div class="rr">Go to</div><div class="rt">${esc(refLabel(r.n, r.c, r.v ? [r.v] : []))}</div></li>`).join("");
+      if (q.length >= 3) {
+        const idx = await buildIndex(); if ($("sq").value.trim() !== q) return;
+        const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+        const hits = idx.filter((r) => terms.every((t) => r.lc.includes(t))), shown = hits.slice(0, 100);
+        const re = new RegExp("(" + terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")", "gi");
+        html += shown.map((r) => `<li data-go="${r.n}.${r.c}.${r.v}"><div class="rr">${esc(refLabel(r.n, r.c, [r.v]))}</div><div class="rt">${esc(r.text).replace(/[\[\]]/g, "").replace(re, "<mark>$1</mark>")}</div></li>`).join("");
+        html += `<li class="rt" style="cursor:default">${hits.length} ${hits.length === 1 ? "verse" : "verses"}${hits.length > 100 ? " (showing 100)" : ""}</li>`;
+      }
+      out.innerHTML = html || '<li class="rt" style="cursor:default">No matches.</li>';
+    }
+    function openSearch() { $("searchov").hidden = false; $("sq").focus(); $("sq").select(); }
+    $("searchbtn").addEventListener("click", openSearch);
+    $("searchclose").addEventListener("click", closeOv);
+    $("searchov").addEventListener("click", (e) => {
+      if (e.target === $("searchov")) { closeOv(); return; }
+      const li = e.target.closest("[data-go]"); if (!li) return;
+      const [n, c, v] = li.dataset.go.split(".").map(Number); closeOv(); go(n, c, v);
+    });
+    $("sq").addEventListener("input", () => { clearTimeout(sTimer); sTimer = setTimeout(runSearch, 180); });
+    $("sq").addEventListener("keydown", (e) => { if (e.key === "Enter") { const first = $("res").querySelector("[data-go]"); if (first) first.click(); } });
+  </script>
+</body>
+</html>

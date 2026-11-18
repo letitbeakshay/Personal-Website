@@ -1,0 +1,37 @@
+-- Private tables for the Bible app (/bible). Only the admin account can read or write them.
+-- Verses are stored by book number (1 = Genesis ... 66 = Revelation), chapter and verse,
+-- so highlights and notes stay attached if you switch translations later.
+
+create table if not exists public.bible_highlights (
+  book int not null check (book between 1 and 66),
+  chapter int not null check (chapter > 0),
+  verse int not null check (verse > 0),
+  color text not null check (color in ('yellow','green','blue','pink','orange')),
+  updated_at timestamptz not null default now(),
+  primary key (book, chapter, verse)
+);
+
+create table if not exists public.bible_notes (
+  id uuid primary key default gen_random_uuid(),
+  book int not null check (book between 1 and 66),
+  chapter int not null check (chapter > 0),
+  verse_start int not null check (verse_start > 0),
+  verse_end int not null check (verse_end >= verse_start),
+  body text not null check (char_length(body) between 1 and 20000),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists bible_notes_ref on public.bible_notes (book, chapter);
+
+alter table public.bible_highlights enable row level security;
+alter table public.bible_notes enable row level security;
+
+drop policy if exists "Admin only highlights" on public.bible_highlights;
+create policy "Admin only highlights" on public.bible_highlights for all to authenticated
+  using ((auth.jwt() ->> 'email') = 'toakshayskumar@gmail.com')
+  with check ((auth.jwt() ->> 'email') = 'toakshayskumar@gmail.com');
+
+drop policy if exists "Admin only notes" on public.bible_notes;
+create policy "Admin only notes" on public.bible_notes for all to authenticated
+  using ((auth.jwt() ->> 'email') = 'toakshayskumar@gmail.com')
+  with check ((auth.jwt() ->> 'email') = 'toakshayskumar@gmail.com');
