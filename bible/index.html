@@ -212,6 +212,12 @@
     }
     @media (max-width:380px) { .text { --fs:18px; } .vh, #viewNotes h2 { font-size:30px; } }
 
+    /* Psalm titles, Psalm 119 headings and the notes printed after the epistles */
+    .ptitle { margin:0 0 1.1em; font-style:italic; color:var(--muted); font-size:.92em; line-height:1.6; }
+    .ptitle i { font-style:normal; }
+    .shead { margin:1.9em 0 .7em; font:600 12px var(--sans); letter-spacing:.12em; color:var(--faint); }
+    .subs { margin:1.4em 0 0; font-style:italic; color:var(--muted); font-size:.88em; line-height:1.6; }
+    .subs i { font-style:normal; }
   </style>
 </head>
 <body>
@@ -410,12 +416,17 @@
       $("ctitle").textContent = b.name + " " + c; $("cmeta").textContent = b.chapters[c - 1].length + " verses";
       document.title = b.name + " " + c + " | Bible";
       let html = "", open = false;
+      const title = (b.titles || {})[c], sub = (b.subs || {})[c], headAt = {};
+      ((b.heads || {})[c] || []).forEach(([after, txt]) => { headAt[after + 1] = txt; });   // a heading sits before verse (after + 1)
+      if (title) html += '<p class="ptitle">' + fmt(title) + "</p>";
       b.chapters[c - 1].forEach((t, i) => {
         const v = i + 1, para = t.charAt(0) === "\u00b6"; if (para) t = t.slice(1);
+        if (headAt[v]) { if (open) { html += "</p>"; open = false; } html += '<h3 class="shead">' + esc(headAt[v]) + "</h3>"; }
         if (!open || para) { if (open) html += "</p>"; html += '<p class="para">'; open = true; }
         html += `<span class="v" data-v="${v}"><sup class="vn">${v}</sup>${fmt(t)} </span>`;
       });
-      $("text").innerHTML = html + "</p>"; $("credit").textContent = tr.credit;
+      html += "</p>"; if (sub) html += '<p class="subs">' + fmt(sub) + "</p>";
+      $("text").innerHTML = html; $("credit").textContent = tr.credit;
       const nx = nextOf(n, c); $("nextcard").hidden = !nx; if (nx) $("nextname").textContent = bookName(nx[0]) + " " + nx[1];
       window.scrollTo(0, 0);
       sync();
@@ -709,12 +720,14 @@
     // ---------- Search and "go to" (used by the overlay on desktop and the Search page on phones)
     let index = null;
     const keyOf = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+    // Search ignores capitals, italics brackets, curly apostrophes and the ae ligature, so "caesar" finds Cæsar and "wife's" finds wife’s.
+    const plain = (t) => t.toLowerCase().replace(/[\[\]]/g, "").replace(/’/g, "'").replace(/æ/g, "ae");
     async function buildIndex(out) {
       if (index) return index;
       out.innerHTML = '<li class="rt">Loading the Bible…</li>';
       await Promise.all(BOOKS.map((b) => loadBook(b.n)));
       index = []; BOOKS.forEach((b) => cache[b.n].chapters.forEach((vs, ci) => vs.forEach((t, vi) => {
-        const text = t.replace(/^¶/, ""); index.push({ n: b.n, c: ci + 1, v: vi + 1, text, lc: text.toLowerCase().replace(/[\[\]]/g, "") });
+        const text = t.replace(/^¶/, ""); index.push({ n: b.n, c: ci + 1, v: vi + 1, text, lc: plain(text) });
       })));
       return index;
     }
@@ -736,9 +749,10 @@
         let html = parseRef(q).map((r) => `<li class="go" data-go="${r.n}.${r.c}.${r.v}"><div class="rr">Go to</div><div class="rt">${esc(refLabel(r.n, r.c, r.v ? [r.v] : []))}</div></li>`).join("");
         if (q.length >= 3) {
           const idx = await buildIndex(out); if (inp.value.trim() !== q) return;
-          const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+          const terms = plain(q).split(/\s+/).filter(Boolean);
           const hits = idx.filter((r) => terms.every((t) => r.lc.includes(t))), shown = hits.slice(0, 100);
-          const re = new RegExp("(" + terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")", "gi");
+          const esc2 = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/ae/g, "(?:ae|\u00e6)").replace(/'/g, "['\u2019]");
+          const re = new RegExp("(" + terms.map(esc2).join("|") + ")", "gi");
           html += shown.map((r) => `<li data-go="${r.n}.${r.c}.${r.v}"><div class="rr">${esc(refLabel(r.n, r.c, [r.v]))}</div><div class="rt">${esc(r.text).replace(/[\[\]]/g, "").replace(re, "<mark>$1</mark>")}</div></li>`).join("");
           html += `<li class="rt" style="cursor:default">${hits.length} ${hits.length === 1 ? "verse" : "verses"}${hits.length > 100 ? " (showing 100)" : ""}</li>`;
         }
