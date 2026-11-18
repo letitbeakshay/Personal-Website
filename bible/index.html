@@ -176,7 +176,14 @@
     .recent .chip2 { padding:9px 15px; font-size:14px; }
     .browse { display:flex; width:100%; justify-content:space-between; align-items:center; margin-top:22px; padding:15px 18px; border:1px solid var(--line); border-radius:14px; background:transparent; color:var(--fg); font:500 15px var(--sans); cursor:pointer; }
     .browse:active { background:var(--panel-2); }
-    #viewNotes h2 { margin:0 0 16px; font:400 34px/1.08 var(--display); display:block; }
+    #viewNotes h2 { margin:0 0 16px; font:400 34px/1.08 var(--display); display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+    #viewNotes .hbtns .btn { font-family:var(--sans); }
+    .hbtns { display:inline-flex; align-items:center; gap:6px; }
+    .gn textarea { width:100%; min-height:170px; max-height:55vh; resize:vertical; padding:12px 14px; border:1px solid var(--line-2); border-radius:12px; background:var(--bg); color:var(--fg); font:inherit; font-size:15.5px; line-height:1.6; }
+    .gn textarea:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--tint); }
+    .gn label { display:block; font:600 12px var(--sans); color:var(--faint); margin:16px 0 6px; }
+    #viewNotes .gn h2 { font:400 30px/1.1 var(--display); }
+    .res .rn { font-size:15px; }
     #viewNotes [data-closelib] { display:none; }
     #viewNotes .res { max-height:none; }
     .mgroup { margin:0 0 22px; }
@@ -301,6 +308,7 @@
         <kbd>Ctrl/Cmd K</kbd><span>Search or go to a verse</span>
         <kbd>/</kbd><span>Search</span>
         <kbd>Shift + click</kbd><span>Select a range of verses</span>
+        <kbd>N</kbd><span>New note, not tied to any verse</span>
         <kbd>Ctrl/Cmd Enter</kbd><span>Save the note you are writing</span>
         <kbd>Esc</kbd><span>Clear selection or close</span>
         <kbd>?</kbd><span>This help</span>
@@ -647,7 +655,7 @@
           <textarea id="nbody" placeholder="Write a note on ${esc(bookName(n))} ${c}" aria-label="Note">${esc(draft)}</textarea>
           <div class="row2"><button class="btn primary sm" id="savenote">${editing ? "Update note" : "Save note"}</button>${editing ? '<button class="btn ghost sm danger" id="delnote">Delete</button>' : ""}<kbd>Ctrl/Cmd Enter</kbd></div>`;
       } else {
-        h += `<div class="ph"><span></span><button class="tb sheetx" id="sheetclose" aria-label="Close">Close</button></div><p class="hint">Tap a verse to write a note on it, highlight it or copy it. A note never needs a highlight. Shift-click to select a range.</p><button class="btn ghost sm" id="addchapnote" type="button">Write a note on this chapter</button><div style="height:20px"></div>`;
+        h += `<div class="ph"><span></span><button class="tb sheetx" id="sheetclose" aria-label="Close">Close</button></div><p class="hint">Tap a verse to write a note on it, highlight it or copy it. A note never needs a highlight. Shift-click to select a range.</p><div class="row2" style="margin-top:0"><button class="btn ghost sm" id="addchapnote" type="button">Note on this chapter</button><button class="btn ghost sm" id="addgeneral" type="button">New general note</button></div>`;
       }
       h += `<div class="ph"><b>Notes in ${esc(bookName(n))} ${c}</b><span>${notes.length}</span></div>`;
       h += notes.length ? `<ul class="nlist">${notes.map((x) => `<li class="nitem${editing === x.id ? " editing" : ""}" data-note="${esc(x.id)}"><div class="nr">${esc(rangeOf(x))}</div><div class="nt">${esc(x.body)}</div></li>`).join("")}</ul>` : '<p class="hint">No notes in this chapter yet.</p>';
@@ -666,6 +674,7 @@
       else if (t.closest("#selclear")) clearSel();
       else if (t.closest("#sheetclose")) { mobilePanel = false; renderPanel(); placeFtb(); }
       else if (t.closest("#addchapnote")) { chapterNote = true; editing = null; draft = ""; mobilePanel = true; renderPanel(); placeFtb(); const ta = $("nbody"); if (ta) ta.focus(); }
+      else if (t.closest("#addgeneral")) openNewGeneral();
       else if (t.closest("#cnclose")) { chapterNote = false; editing = null; draft = ""; mobilePanel = false; renderPanel(); placeFtb(); }
       else if (t.closest("#savenote")) saveNote();
       else if (t.closest("#delnote")) deleteNote();
@@ -687,12 +696,13 @@
       if ($("app").hidden) return;
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); openSearch(); return; }
       if (e.metaKey || e.ctrlKey || e.altKey) return;
-      const tag = e.target.tagName; if (tag === "INPUT" || tag === "TEXTAREA") { if (e.key === "Escape") closeOv(); return; }
+      const tag = e.target.tagName; if (tag === "INPUT" || tag === "TEXTAREA") { if (e.key === "Escape" && !(lib.mode === "edit" && lib.draft.trim())) closeOv(); return; }   // Esc never throws away a note you are writing
       if (e.key === "Escape") { if (anyOverlay()) closeOv(); else clearSel(); return; }
       if (anyOverlay()) return;
       if (e.key === "ArrowLeft") step(-1); else if (e.key === "ArrowRight") step(1);
       else if (e.key === "/") { e.preventDefault(); openSearch(); }
       else if (e.key === "?") { $("helpov").hidden = false; }
+      else if (e.key === "n" || e.key === "N") { e.preventDefault(); openNewGeneral(); }
     });
     // Swipe to turn the page (phones)
     let tx = 0, ty = 0, tt = 0;
@@ -789,40 +799,116 @@
     $("searchov").addEventListener("click", (e) => { if (e.target === $("searchov")) closeOv(); });
 
     // ---------- Library: all my notes and highlights (an overlay on desktop, the My notes page on phones)
-    let lib = { tab: "notes", color: "all", q: "", notes: [], hls: [] };
+    // A note can be on a verse, on a whole chapter (verse 0), or a free-standing "general" note (book 0) that is not tied to anything.
+    let lib = { tab: "notes", kind: "all", color: "all", q: "", notes: [], hls: [], mode: "list", editId: null, draft: "", ref: "", startNew: false };
     const libBox = () => (isMobile() ? $("viewNotes") : $("libsheet"));
     const libTitle = () => (isMobile() ? "My notes" : "My notes and highlights");
-    async function openLibrary(inView) {
+    const isGeneral = (x) => x.book === 0;
+    // General notes first (newest first), then verse and chapter notes in Bible order.
+    const sortLib = () => lib.notes.sort((a, b) => {
+      if (isGeneral(a) !== isGeneral(b)) return isGeneral(a) ? -1 : 1;
+      if (isGeneral(a)) return String(b.created_at).localeCompare(String(a.created_at));
+      return a.book - b.book || a.chapter - b.chapter || a.verse_start - b.verse_start || String(a.created_at).localeCompare(String(b.created_at));
+    });
+    const dateOf = (iso) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+
+    async function openLibrary(inView, startNew) {
       if (!inView) { closeOv(); $("libov").hidden = false; }
+      const wantNew = startNew || lib.startNew; lib.startNew = false;
+      if (!(lib.mode === "edit" && lib.draft.trim() && !wantNew)) lib.mode = "list";   // keep an unsaved draft if you left in the middle of writing
       libBox().innerHTML = '<h2>' + libTitle() + '</h2><p class="hint">Loading…</p>';
       const [n, h] = await Promise.all([
-        sb.from("bible_notes").select("*").order("book").order("chapter").order("verse_start"),
+        sb.from("bible_notes").select("*"),
         sb.from("bible_highlights").select("*").order("book").order("chapter").order("verse")
       ]);
       if (n.error || h.error) { libBox().innerHTML = '<h2>' + libTitle() + ' <button class="tb" data-closelib="1">Close</button></h2><p class="hint">' + esc(explain(n.error || h.error)) + "</p>"; return; }
-      lib.notes = n.data; lib.hls = h.data;
-      await Promise.all([...new Set([...lib.notes, ...lib.hls].map((r) => r.book))].map(loadBook));
-      renderLib();
+      lib.notes = n.data; lib.hls = h.data; sortLib();
+      await Promise.all([...new Set([...lib.notes, ...lib.hls].map((r) => r.book).filter((b) => b > 0))].map(loadBook));
+      if (wantNew) newGeneral(); else renderLib();
     }
+
     function renderLib() {
+      if (lib.mode === "edit") { renderEditor(); return; }
       const q = lib.q.toLowerCase();
-      const ns = lib.notes.filter((x) => !q || (x.body + " " + refLabel(x.book, x.chapter, [x.verse_start])).toLowerCase().includes(q));
+      const ns = lib.notes.filter((x) => (lib.kind === "all" || (lib.kind === "general") === isGeneral(x)) && (!q || (x.body + " " + noteRef(x)).toLowerCase().includes(q)));
       const hs = lib.hls.filter((x) => (lib.color === "all" || x.color === lib.color) && (!q || vtext(x.book, x.chapter, x.verse).toLowerCase().includes(q)));
+      const gCount = lib.notes.filter(isGeneral).length;
       let body = "";
       if (lib.tab === "notes") {
-        body = ns.length ? `<ul class="res">${ns.map((x) => `<li data-go="${x.book}.${x.chapter}.${x.verse_start}"><div class="rr">${esc(noteRef(x))}</div><div class="rn">${esc(x.body)}</div><div class="rt">${esc(range(x.verse_start, x.verse_end).map((v) => vtext(x.book, x.chapter, v)).join(" ").slice(0, 160))}</div></li>`).join("")}</ul>` : `<p class="hint">${lib.notes.length ? "No notes match." : "No notes yet. Select a verse and press Note."}</p>`;
+        const kinds = [["all", "All"], ["general", "General (" + gCount + ")"], ["verse", "On verses (" + (lib.notes.length - gCount) + ")"]];
+        body = '<div class="tabs2">' + kinds.map((k) => '<button class="chip2" data-lkind="' + k[0] + '" aria-pressed="' + (lib.kind === k[0]) + '">' + k[1] + "</button>").join("") + "</div>"
+          + (ns.length ? '<ul class="res">' + ns.map((x) => isGeneral(x)
+            ? '<li data-edit="' + esc(x.id) + '"><div class="rr">General note · ' + esc(dateOf(x.created_at)) + '</div><div class="rn">' + esc(x.body) + "</div></li>"
+            : '<li data-go="' + x.book + "." + x.chapter + "." + x.verse_start + '"><div class="rr">' + esc(noteRef(x)) + '</div><div class="rn">' + esc(x.body) + '</div><div class="rt">' + esc(range(x.verse_start, x.verse_end).map((v) => vtext(x.book, x.chapter, v)).join(" ").slice(0, 160)) + "</div></li>").join("") + "</ul>"
+            : '<p class="hint">' + (lib.notes.length ? "No notes match." : "No notes yet. Press New note to write one, or select a verse and press Note.") + "</p>");
       } else {
-        body = `<div class="tabs2">${["all", ...Object.keys(COLORS)].map((c) => `<button class="chip2" data-lcolor="${c}" aria-pressed="${lib.color === c}">${c === "all" ? "All colours" : `<span class="bar" style="background:${COLORS[c]}"></span>${c}`}</button>`).join("")}</div>`
-          + (hs.length ? `<ul class="res">${hs.map((x) => `<li data-go="${x.book}.${x.chapter}.${x.verse}"><div class="rr"><span class="bar" style="background:${COLORS[x.color]}"></span>${esc(refLabel(x.book, x.chapter, [x.verse]))}</div><div class="rt">${esc(vtext(x.book, x.chapter, x.verse))}</div></li>`).join("")}</ul>` : `<p class="hint">${lib.hls.length ? "No highlights match." : "No highlights yet. Select a verse and pick a colour."}</p>`);
+        body = '<div class="tabs2">' + ["all", ...Object.keys(COLORS)].map((c) => '<button class="chip2" data-lcolor="' + c + '" aria-pressed="' + (lib.color === c) + '">' + (c === "all" ? "All colours" : '<span class="bar" style="background:' + COLORS[c] + '"></span>' + c) + "</button>").join("") + "</div>"
+          + (hs.length ? '<ul class="res">' + hs.map((x) => '<li data-go="' + x.book + "." + x.chapter + "." + x.verse + '"><div class="rr"><span class="bar" style="background:' + COLORS[x.color] + '"></span>' + esc(refLabel(x.book, x.chapter, [x.verse])) + '</div><div class="rt">' + esc(vtext(x.book, x.chapter, x.verse)) + "</div></li>").join("") + "</ul>"
+            : '<p class="hint">' + (lib.hls.length ? "No highlights match." : "No highlights yet. Select a verse and pick a colour.") + "</p>");
       }
-      libBox().innerHTML = `<h2>${libTitle()} <button class="tb" data-closelib="1">Close</button></h2>
-        <div class="tabs2"><button class="chip2" data-ltab="notes" aria-pressed="${lib.tab === "notes"}">Notes (${lib.notes.length})</button><button class="chip2" data-ltab="hl" aria-pressed="${lib.tab === "hl"}">Highlights (${lib.hls.length})</button></div>
-        <input class="sinput" id="libq" type="search" placeholder="Filter" value="${esc(lib.q)}" aria-label="Filter" style="margin-bottom:6px">${body}`;
+      libBox().innerHTML = '<h2>' + libTitle() + ' <span class="hbtns"><button class="btn primary sm" data-newnote="1" type="button">New note</button><button class="tb" data-closelib="1">Close</button></span></h2>'
+        + '<div class="tabs2"><button class="chip2" data-ltab="notes" aria-pressed="' + (lib.tab === "notes") + '">Notes (' + lib.notes.length + ')</button><button class="chip2" data-ltab="hl" aria-pressed="' + (lib.tab === "hl") + '">Highlights (' + lib.hls.length + ")</button></div>"
+        + '<input class="sinput" id="libq" type="search" placeholder="Filter" value="' + esc(lib.q) + '" aria-label="Filter" style="margin-bottom:6px">' + body;
       const qi = $("libq"); if (qi) { qi.addEventListener("input", () => { lib.q = qi.value; const pos = qi.selectionStart; renderLib(); const n2 = $("libq"); n2.focus(); n2.setSelectionRange(pos, pos); }); }
     }
+
+    // ----- Write or edit a general note
+    const refTarget = () => (parseRef(lib.ref || "")[0] || null);
+    function refHint() {
+      const m = refTarget(), h = $("gnhint"); if (!h) return;
+      h.textContent = m ? "Attached to " + refLabel(m.n, m.c, m.v ? [m.v] : []) + (m.v ? "" : " (whole chapter)") : (lib.ref.trim() ? "Not recognised, so this stays a general note." : "Not attached. It stays a general note.");
+    }
+    function renderEditor() {
+      const x = lib.notes.find((n) => n.id === lib.editId);
+      libBox().innerHTML = '<div class="gn"><h2>' + (x ? "Edit note" : "New note") + ' <button class="tb" data-libcancel="1" type="button">Cancel</button></h2>'
+        + '<textarea id="gnbody" placeholder="Write anything: a thought, a prayer, a question, something to remember" aria-label="Note">' + esc(lib.draft) + "</textarea>"
+        + '<label for="gnref">Attach to a verse (optional)</label>'
+        + '<input class="sinput" id="gnref" type="text" placeholder=\'For example "john 3:16" or "psalm 23"\' value="' + esc(lib.ref) + '" autocomplete="off" autocapitalize="off" aria-label="Attach to a verse">'
+        + '<p class="hint" id="gnhint"></p>'
+        + '<div class="row2"><button class="btn primary sm" id="gnsave" type="button">Save note</button>' + (x ? '<button class="btn ghost sm danger" id="gndel" type="button">Delete</button>' : "") + "<kbd>Ctrl/Cmd Enter</kbd></div></div>";
+      const ta = $("gnbody"), rf = $("gnref");
+      ta.addEventListener("input", () => { lib.draft = ta.value; });
+      ta.addEventListener("keydown", (e) => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); saveGeneral(); } });
+      rf.addEventListener("input", () => { lib.ref = rf.value; refHint(); });
+      rf.addEventListener("keydown", (e) => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); saveGeneral(); } });
+      refHint(); ta.focus();
+    }
+    function newGeneral() { lib.mode = "edit"; lib.editId = null; lib.draft = ""; lib.ref = ""; renderLib(); }
+    function editGeneral(id) { const x = lib.notes.find((n) => n.id === id); if (!x) return; lib.mode = "edit"; lib.editId = id; lib.draft = x.body; lib.ref = ""; renderLib(); }
+    async function saveGeneral() {
+      const body = ($("gnbody").value || "").trim(); if (!body) { toast("Write something first.", true); return; }
+      const m = refTarget(), row = m ? { book: m.n, chapter: m.c, verse_start: m.v, verse_end: m.v } : { book: 0, chapter: 0, verse_start: 0, verse_end: 0 };
+      let res;
+      if (lib.editId) res = await sb.from("bible_notes").update({ ...row, body, updated_at: new Date().toISOString() }).eq("id", lib.editId).select().single();
+      else res = await sb.from("bible_notes").insert({ ...row, body }).select().single();
+      if (res.error) { toast(explain(res.error), true); return; }
+      if (res.data.book > 0) await loadBook(res.data.book);
+      lib.notes = lib.notes.filter((n) => n.id !== res.data.id); lib.notes.push(res.data); sortLib();
+      // keep the chapter on screen in step if the note was attached to it
+      notes = notes.filter((n) => n.id !== res.data.id);
+      if (res.data.book === cur.n && res.data.chapter === cur.c) notes = [...notes, res.data].sort((a, b) => a.verse_start - b.verse_start);
+      lib.mode = "list"; lib.editId = null; lib.draft = ""; lib.ref = ""; lib.kind = "all"; lib.q = "";
+      toast("Note saved."); renderLib(); sync();
+    }
+    async function deleteGeneral() {
+      if (!lib.editId || !confirm("Delete this note? This cannot be undone.")) return;
+      const { error } = await sb.from("bible_notes").delete().eq("id", lib.editId);
+      if (error) { toast(explain(error), true); return; }
+      lib.notes = lib.notes.filter((n) => n.id !== lib.editId); notes = notes.filter((n) => n.id !== lib.editId);
+      lib.mode = "list"; lib.editId = null; lib.draft = ""; lib.ref = ""; toast("Note deleted."); renderLib(); sync();
+    }
+    // From anywhere: open My notes straight into a new, empty note.
+    function openNewGeneral() { if (isMobile()) { lib.startNew = true; setView("notes"); } else openLibrary(false, true); }
+
     function libClick(e) {
       const t = e.target;
       if (t === $("libov") || t.closest("[data-closelib]")) closeOv();
+      else if (t.closest("[data-newnote]")) newGeneral();
+      else if (t.closest("[data-libcancel]")) { lib.mode = "list"; lib.editId = null; lib.draft = ""; lib.ref = ""; renderLib(); }
+      else if (t.closest("#gnsave")) saveGeneral();
+      else if (t.closest("#gndel")) deleteGeneral();
+      else if (t.closest("[data-edit]")) editGeneral(t.closest("[data-edit]").dataset.edit);
+      else if (t.closest("[data-lkind]")) { lib.kind = t.closest("[data-lkind]").dataset.lkind; renderLib(); }
       else if (t.closest("[data-ltab]")) { lib.tab = t.closest("[data-ltab]").dataset.ltab; renderLib(); }
       else if (t.closest("[data-lcolor]")) { lib.color = t.closest("[data-lcolor]").dataset.lcolor; renderLib(); }
       else if (t.closest("[data-go]")) { const [n, c, v] = t.closest("[data-go]").dataset.go.split(".").map(Number); closeOv(); go(n, c, v); }
