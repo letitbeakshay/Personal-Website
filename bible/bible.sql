@@ -35,3 +35,9 @@ drop policy if exists "Admin only notes" on public.bible_notes;
 create policy "Admin only notes" on public.bible_notes for all to authenticated
   using ((auth.jwt() ->> 'email') = 'toakshayskumar@gmail.com')
   with check ((auth.jwt() ->> 'email') = 'toakshayskumar@gmail.com');
+
+-- Added later: notes on a whole chapter (verse 0 means "the chapter itself"). Already applied.
+alter table public.bible_notes drop constraint if exists bible_notes_verse_start_check;
+alter table public.bible_notes drop constraint if exists bible_notes_verse_end_check;
+alter table public.bible_notes add constraint bible_notes_verse_start_check check (verse_start >= 0);
+alter table public.bible_notes add constraint bible_notes_verse_end_check check (verse_end >= verse_start);
