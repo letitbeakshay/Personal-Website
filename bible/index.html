@@ -156,6 +156,62 @@
     @media (max-width:560px) { .fs { display:none; } .topbar { padding:0 8px; gap:2px; } .where { padding:0 10px; } }
     @media (min-width:901px) { .only-m { display:none !important; } }
     @media (prefers-reduced-motion:reduce) { * { transition:none !important; animation:none !important; } }
+    /* ===== Phone app layout: footer tabs, Search home, My notes page, More ===== */
+    .tabbar, .views { display:none; }
+    .vh { margin:0 0 16px; font:400 34px/1.08 var(--display); }
+    .view { display:none; margin:0; border:0; padding:calc(22px + env(safe-area-inset-top)) 16px calc(var(--tabh, 60px) + 28px + env(safe-area-inset-bottom)); min-height:100vh; min-height:100dvh; }
+    .msearch { position:relative; margin:0 0 14px; }
+    .msearch svg { position:absolute; left:14px; top:50%; transform:translateY(-50%); width:19px; height:19px; color:var(--faint); pointer-events:none; }
+    .msearch input { width:100%; padding:15px 16px 15px 44px; border:1px solid var(--line-2); border-radius:14px; background:var(--panel); color:var(--fg); font:inherit; font-size:17px; }
+    .msearch input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--tint); }
+    #mres { max-height:none; margin-top:6px; }
+    .lbl { font:600 12px var(--sans); color:var(--faint); margin:22px 0 10px; letter-spacing:.02em; }
+    .cont { display:block; width:100%; text-align:left; padding:16px 18px; border:1px solid var(--line); border-radius:16px; background:var(--panel); color:var(--fg); cursor:pointer; }
+    .cont:active { background:var(--panel-2); }
+    .cont .ck { font:500 11.5px var(--mono); color:var(--accent); letter-spacing:.05em; text-transform:uppercase; }
+    .cont .ct { margin:4px 0 6px; font:400 28px/1.1 var(--display); }
+    .cont .cx { margin:0; font:italic 400 15px/1.5 var(--scripture); color:var(--muted); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .cont .cg { display:inline-flex; margin-top:12px; align-items:center; gap:6px; color:var(--fg); font:500 14px var(--sans); }
+    .recent { display:flex; gap:8px; flex-wrap:wrap; }
+    .recent .chip2 { padding:9px 15px; font-size:14px; }
+    .browse { display:flex; width:100%; justify-content:space-between; align-items:center; margin-top:22px; padding:15px 18px; border:1px solid var(--line); border-radius:14px; background:transparent; color:var(--fg); font:500 15px var(--sans); cursor:pointer; }
+    .browse:active { background:var(--panel-2); }
+    #viewNotes h2 { margin:0 0 16px; font:400 34px/1.08 var(--display); display:block; }
+    #viewNotes [data-closelib] { display:none; }
+    #viewNotes .res { max-height:none; }
+    .mgroup { margin:0 0 22px; }
+    .mcard { border:1px solid var(--line); border-radius:16px; background:var(--panel); overflow:hidden; }
+    .mrow { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:15px 16px; border-bottom:1px solid var(--line); font-size:15.5px; width:100%; background:none; border-left:0; border-right:0; border-top:0; color:var(--fg); text-align:left; text-decoration:none; cursor:pointer; }
+    .mrow:last-child { border-bottom:0; }
+    .mrow small { color:var(--faint); font-size:13px; }
+    .seg { display:inline-flex; border:1px solid var(--line-2); border-radius:10px; overflow:hidden; }
+    .seg button { padding:7px 16px; border:0; background:transparent; color:var(--muted); font:500 14px var(--sans); cursor:pointer; }
+    .seg button[aria-pressed="true"] { background:var(--fg); color:var(--bg); }
+    .sizebox { padding:15px 16px; border-bottom:1px solid var(--line); }
+    .sizebox input[type=range] { width:100%; accent-color:var(--accent); margin:10px 0 8px; }
+    .sample { margin:0; font:400 var(--fs,19px)/1.7 var(--scripture); }
+    .rowdanger { color:#e5484d; }
+    @media (max-width:900px) {
+      :root { --tabh:60px; }
+      .views { display:block; }
+      #app:not([data-view="bible"]) .app, #app:not([data-view="bible"]) .topbar, #app:not([data-view="bible"]) .ftb { display:none !important; }
+      #app[data-view="bible"] .view { display:none; }
+      #app[data-view="search"] #viewSearch, #app[data-view="notes"] #viewNotes, #app[data-view="more"] #viewMore { display:block; }
+      #searchbtn, #libbtn, #fsdown, #fsup, #theme, #signout { display:none; }
+      .topbar { padding:0 8px; gap:2px; padding-top:env(safe-area-inset-top); height:calc(var(--topbar) + env(safe-area-inset-top)); }
+      .tabbar { display:flex; position:fixed; left:0; right:0; bottom:0; z-index:22; height:calc(var(--tabh) + env(safe-area-inset-bottom)); padding-bottom:env(safe-area-inset-bottom); background:color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-top:1px solid var(--line); }
+      .tabbar button { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; background:none; border:0; color:var(--faint); font:500 11px var(--sans); cursor:pointer; position:relative; -webkit-tap-highlight-color:transparent; }
+      .tabbar button svg { width:23px; height:23px; }
+      .tabbar button[aria-current="page"] { color:var(--accent); }
+      .tabbar button[aria-current="page"]::before { content:""; position:absolute; top:0; width:30px; height:3px; border-radius:0 0 3px 3px; background:var(--accent); }
+      .ftb { bottom:calc(var(--tabh) + env(safe-area-inset-bottom) + 12px) !important; }
+      .toast { bottom:calc(var(--tabh) + env(safe-area-inset-bottom) + 76px); }
+      .reader { padding-top:22px; padding-bottom:calc(var(--tabh) + 34vh); }
+      .panel { z-index:35; }
+      .page .nextcard b { font-size:22px; }
+    }
+    @media (max-width:380px) { .text { --fs:18px; } .vh, #viewNotes h2 { font-size:30px; } }
+
   </style>
 </head>
 <body>
@@ -176,7 +232,7 @@
   </section>
 
   <!-- App -->
-  <div id="app" hidden>
+  <div id="app" data-view="bible" hidden>
     <header class="topbar">
       <a class="brand" href="../" title="Back to the site">Bible</a>
       <button class="tb" id="prev" aria-label="Previous chapter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
@@ -192,6 +248,13 @@
       <button class="tb" id="signout" aria-label="Sign out" title="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5H6v14h4"/><path d="M14 8l4 4-4 4"/><path d="M18 12H9"/></svg></button>
     </header>
 
+    <!-- Phone views -->
+    <div class="views">
+      <section class="view" id="viewSearch" aria-label="Search"></section>
+      <section class="view" id="viewNotes" aria-label="My notes"></section>
+      <section class="view" id="viewMore" aria-label="More"></section>
+    </div>
+
     <div class="app">
       <main class="reader" id="reader">
         <div class="page">
@@ -206,6 +269,13 @@
     </div>
 
     <div class="ftb" id="ftb" role="toolbar" aria-label="Verse actions" hidden></div>
+
+  <nav class="tabbar" id="tabbar" aria-label="Main">
+    <button type="button" data-view="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><span>Search</span></button>
+    <button type="button" data-view="bible" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H18v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H18v-3"/><path d="M12 7v6M9.5 9.5h5"/></svg><span>Bible</span></button>
+    <button type="button" data-view="notes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M10 12h5M10 16h5"/></svg><span>My notes</span></button>
+    <button type="button" data-view="more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14"/><circle cx="9" cy="7" r="1.6" fill="var(--bg)"/><circle cx="15" cy="12" r="1.6" fill="var(--bg)"/><circle cx="8" cy="17" r="1.6" fill="var(--bg)"/></svg><span>More</span></button>
+  </nav>
   </div>
 
   <div class="overlay" id="pickov" hidden><div class="sheet" id="picksheet" role="dialog" aria-label="Choose book and chapter"></div></div>
@@ -248,7 +318,7 @@
     const tr = TR.kjv;
     const isMobile = () => matchMedia("(max-width:900px)").matches;
 
-    let BOOKS = [], cache = {}, cur = { n: 1, c: 1 }, sel = [], anchor = 0, hl = {}, notes = [], editing = null, draft = "", mobilePanel = false, token = 0, toastT;
+    let view = "bible", BOOKS = [], cache = {}, cur = { n: 1, c: 1 }, sel = [], anchor = 0, hl = {}, notes = [], editing = null, draft = "", mobilePanel = false, token = 0, toastT;
 
     const toast = (m, err) => { const t = $("toast"); t.textContent = m; t.className = "toast" + (err ? " err" : ""); t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, err ? 5000 : 1800); };
     const explain = (e) => /relation .* does not exist|42P01|schema cache/i.test(e.message || "") ? "The Bible tables are missing in the database." : /row-level|42501|permission|JWT/i.test(e.message || "") ? "Not allowed. Please sign in again." : (e.message || "Something went wrong.");
@@ -273,7 +343,8 @@
       }
       $("pw").value = ""; m.textContent = ""; showFor(data.session);
     });
-    $("signout").addEventListener("click", async () => { await sb.auth.signOut(); sel = []; hl = {}; notes = []; closeOv(); hideFtb(); showFor(null); });
+    async function doSignOut() { await sb.auth.signOut(); sel = []; hl = {}; notes = []; closeOv(); hideFtb(); view = "bible"; $("app").dataset.view = "bible"; showFor(null); }
+    $("signout").addEventListener("click", doSignOut);
     sb.auth.getSession().then(({ data }) => showFor(data.session));
     // If the session ever ends (for example it was revoked), return to the login screen.
     sb.auth.onAuthStateChange((ev, s) => { if (ev === "SIGNED_OUT" && !$("app").hidden) showFor(null); });
@@ -295,14 +366,21 @@
     }
     const range = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
 
+    const readPos = () => { try { const l = JSON.parse(localStorage.getItem("bible_pos") || "null"); return l && l.n >= 1 && l.n <= 66 ? l : null; } catch (e) { return null; } };
+    const readRecent = () => { try { return JSON.parse(localStorage.getItem("bible_recent") || "[]").filter((r) => r && r.n >= 1 && r.n <= 66); } catch (e) { return []; } };
+    const recordRecent = (n, c) => { const list = [{ n, c }, ...readRecent().filter((r) => !(r.n === n && r.c === c))].slice(0, 6); try { localStorage.setItem("bible_recent", JSON.stringify(list)); } catch (e) {} };
+
     async function start() {
       if (!BOOKS.length) { const r = await fetch(tr.dir + "books.json"); BOOKS = (await r.json()).books; }
       const h = location.hash.replace("#", "").split(".").map(Number);
+      const deep = h[0] >= 1 && h[0] <= 66, saved = readPos();
       let n = 1, c = 1, v = 0;
-      if (h[0] >= 1 && h[0] <= 66) { n = h[0]; c = h[1] || 1; v = h[2] || 0; }
-      else { try { const l = JSON.parse(localStorage.getItem("bible_pos") || "null"); if (l && l.n >= 1 && l.n <= 66) { n = l.n; c = l.c || 1; } } catch (e) {} }
+      if (deep) { n = h[0]; c = h[1] || 1; v = h[2] || 0; }
+      else if (saved) { n = saved.n; c = saved.c || 1; }
       try { const fs = Number(localStorage.getItem("bible_fs")); if (fs >= 15 && fs <= 30) document.documentElement.style.setProperty("--fs", fs + "px"); } catch (e) {}
-      go(n, c, v);
+      // On a phone the app opens on Search; the chapter you were reading loads quietly behind it.
+      if (isMobile() && !deep) setView("search", false); else setView("bible", false);
+      go(n, c, v, { resume: !deep, stay: isMobile() && !deep });
     }
 
     // Opening a verse link (#43.3.16) while the app is already open jumps there.
@@ -314,23 +392,26 @@
 
     const nextOf = (n, c) => { const b = BOOKS[n - 1]; if (c < b.chapters) return [n, c + 1]; return n < 66 ? [n + 1, 1] : null; };
 
-    async function go(n, c, verse) {
-      const my = ++token;
+    async function go(n, c, verse, opts = {}) {
+      const my = ++token, saved = readPos();
       $("text").dataset.ready = "0";
       $("text").innerHTML = '<div class="skel" style="width:92%"></div><div class="skel" style="width:78%"></div><div class="skel" style="width:86%"></div><div class="skel" style="width:60%"></div>';
       let b; try { b = await loadBook(n); } catch (e) { toast(explain(e), true); return; }
       if (my !== token) return;
       c = Math.min(Math.max(1, c), b.chapters.length);
       cur = { n, c }; sel = []; anchor = 0; editing = null; draft = ""; hl = {}; notes = []; mobilePanel = false;
-      try { localStorage.setItem("bible_pos", JSON.stringify(cur)); } catch (e) {}
-      history.replaceState(null, "", "#" + n + "." + c + (verse ? "." + verse : ""));
+      const resumeV = !verse && opts.resume && saved && saved.n === n && saved.c === c && saved.v > 1 ? saved.v : 0;
+      try { localStorage.setItem("bible_pos", JSON.stringify({ n, c, v: resumeV || verse || 1 })); } catch (e) {}
+      recordRecent(n, c);
+      if (isMobile() && !opts.stay) setView("bible", false);
+      history.replaceState(null, "", location.pathname);   // the address bar stays clean, so reopening the app always starts fresh
       $("wheretext").textContent = b.name + " " + c; $("trname").textContent = tr.short;
       $("ceyebrow").textContent = BOOKS[n - 1].ot ? "Old Testament" : "New Testament";
       $("ctitle").textContent = b.name + " " + c; $("cmeta").textContent = b.chapters[c - 1].length + " verses";
       document.title = b.name + " " + c + " | Bible";
       let html = "", open = false;
       b.chapters[c - 1].forEach((t, i) => {
-        const v = i + 1, para = t.charAt(0) === "¶"; if (para) t = t.slice(1);
+        const v = i + 1, para = t.charAt(0) === "\u00b6"; if (para) t = t.slice(1);
         if (!open || para) { if (open) html += "</p>"; html += '<p class="para">'; open = true; }
         html += `<span class="v" data-v="${v}"><sup class="vn">${v}</sup>${fmt(t)} </span>`;
       });
@@ -339,6 +420,7 @@
       window.scrollTo(0, 0);
       sync();
       if (nx) loadBook(nx[0]).catch(() => {});   // warm the next chapter so turning the page is instant
+      if (resumeV && view === "bible") setTimeout(resumeScroll, 30);
       if (verse) { const el = document.querySelector('.v[data-v="' + verse + '"]'); if (el) { setTimeout(() => { el.scrollIntoView({ block: "center" }); el.classList.add("flash"); }, 30); } }
       // Your highlights and notes for this chapter
       const [h, nn] = await Promise.all([
@@ -351,6 +433,77 @@
       hl = {}; h.data.forEach((r) => { hl[r.verse] = r.color; }); notes = nn.data;
       sync();
     }
+
+    // Remember exactly where you stopped reading (the verse at the top of the screen).
+    function savePos() {
+      if (view !== "bible" || $("text").dataset.ready !== "1") return;
+      const els = document.querySelectorAll("#text .v"), top = 70;
+      for (const el of els) { if (el.getBoundingClientRect().bottom > top) { try { localStorage.setItem("bible_pos", JSON.stringify({ n: cur.n, c: cur.c, v: Number(el.dataset.v) })); } catch (e) {} return; } }
+    }
+    function resumeScroll() {
+      const p = readPos(); if (!p || p.n !== cur.n || p.c !== cur.c || !(p.v > 1)) return;
+      const el = document.querySelector('.v[data-v="' + p.v + '"]'); if (!el) return;
+      window.scrollTo(0, Math.max(0, el.getBoundingClientRect().top + scrollY - 78));
+      if (!resumeScroll.said) { resumeScroll.said = true; toast("Back at " + refLabel(cur.n, cur.c, [p.v])); }
+    }
+
+    // ---------- Phone views: Search, Bible, My notes, More
+    function setView(v, resume = true) {
+      view = v; $("app").dataset.view = v; closeOv();
+      document.querySelectorAll("#tabbar [data-view]").forEach((b) => { if (b.dataset.view === v) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+      if (v === "search") renderHome(); else if (v === "notes") openLibrary(true); else if (v === "more") renderMore();
+      if (v === "bible") requestAnimationFrame(() => { if (resume) resumeScroll(); placeFtb(); }); else { window.scrollTo(0, 0); hideFtb(); }
+    }
+    $("tabbar").addEventListener("click", (e) => { const b = e.target.closest("[data-view]"); if (b) { if (b.dataset.view === view && view === "bible") window.scrollTo({ top: 0, behavior: "smooth" }); else setView(b.dataset.view); } });
+
+    async function renderHome() {
+      const p = readPos(), recent = readRecent().filter((r) => !(p && r.n === p.n && r.c === p.c)).slice(0, 5);
+      $("viewSearch").innerHTML = `<h1 class="vh">Search</h1>
+        <div class="msearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+          <input id="msq" type="search" placeholder='Words, or a verse like "john 3:16"' aria-label="Search the Bible" autocomplete="off" autocapitalize="off" enterkeyhint="search"></div>
+        <ul class="res" id="mres"></ul>
+        <div id="homebody">
+          ${p ? `<div class="lbl">Continue reading</div><button class="cont" id="contbtn" type="button"><div class="ck">${esc(BOOKS[p.n - 1].ot ? "Old Testament" : "New Testament")}</div><div class="ct">${esc(refLabel(p.n, p.c, p.v > 1 ? [p.v] : []))}</div><p class="cx" id="cexc"></p><span class="cg">Continue <span aria-hidden="true">\u2192</span></span></button>` : ""}
+          ${recent.length ? `<div class="lbl">Recent</div><div class="recent">${recent.map((r) => `<button class="chip2" type="button" data-rn="${r.n}" data-rc="${r.c}">${esc(bookName(r.n))} ${r.c}</button>`).join("")}</div>` : ""}
+          ${!p && !recent.length ? `<div class="lbl">Try</div><div class="recent">${[[43, 3, 16], [19, 23, 0], [45, 8, 0], [1, 1, 0]].map((r) => `<button class="chip2" type="button" data-rn="${r[0]}" data-rc="${r[1]}" data-rv="${r[2]}">${esc(refLabel(r[0], r[1], r[2] ? [r[2]] : []))}</button>`).join("")}</div>` : ""}
+          <button class="browse" id="browsebtn" type="button"><span>Browse books</span><span aria-hidden="true">\u2192</span></button>
+        </div>`;
+      attachSearch($("msq"), $("mres"), $("homebody"));
+      if (p) loadBook(p.n).then(() => { const x = $("cexc"); if (x) x.textContent = vtext(p.n, p.c, p.v > 1 ? p.v : 1); }).catch(() => {});
+      setTimeout(() => { const i = $("msq"); if (i && view === "search") i.focus(); }, 120);
+    }
+    $("viewSearch").addEventListener("click", (e) => {
+      const t = e.target;
+      if (t.closest("#contbtn")) { const p = readPos(); if (p) { go(p.n, p.c, 0, { resume: true }); } }
+      else if (t.closest("[data-rn]")) { const b = t.closest("[data-rn]"); go(Number(b.dataset.rn), Number(b.dataset.rc), Number(b.dataset.rv || 0)); }
+      else if (t.closest("#browsebtn")) { pickBooks(); $("pickov").hidden = false; }
+    });
+
+    function renderMore() {
+      const dark = document.documentElement.getAttribute("data-theme") !== "light", fs = parseFloat(getComputedStyle($("text")).fontSize) || 19;
+      $("viewMore").innerHTML = `<h1 class="vh">More</h1>
+        <div class="mgroup"><div class="lbl" style="margin-top:0">Reading</div><div class="mcard">
+          <div class="mrow"><span>Theme</span><span class="seg" role="group" aria-label="Theme"><button type="button" data-theme-set="dark" aria-pressed="${dark}">Dark</button><button type="button" data-theme-set="light" aria-pressed="${!dark}">Light</button></span></div>
+          <div class="sizebox"><div style="display:flex;justify-content:space-between"><span>Text size</span><small style="color:var(--faint)" id="sizeval">${Math.round(fs)} px</small></div>
+            <input id="sizerange" type="range" min="15" max="30" step="1" value="${Math.round(fs)}" aria-label="Text size"><p class="sample">For God so loved the world, that he gave his only begotten Son.</p></div>
+          <div class="mrow"><span>Translation</span><small>${esc(tr.short)}</small></div>
+        </div></div>
+        <div class="mgroup"><div class="lbl">App</div><div class="mcard">
+          <a class="mrow" href="../">Back to my site <span aria-hidden="true">\u2192</span></a>
+          <button class="mrow rowdanger" id="mso" type="button">Sign out</button>
+        </div></div>
+        <p class="credit" style="padding:0 4px">${esc(tr.credit)}</p>`;
+    }
+    $("viewMore").addEventListener("click", (e) => {
+      const t = e.target;
+      if (t.closest("[data-theme-set]")) { const nx = t.closest("[data-theme-set]").dataset.themeSet; document.documentElement.setAttribute("data-theme", nx); try { localStorage.setItem("theme", nx); } catch (x) {} renderMore(); }
+      else if (t.closest("#mso")) doSignOut();
+    });
+    $("viewMore").addEventListener("input", (e) => {
+      if (e.target.id !== "sizerange") return; const v = Number(e.target.value);
+      document.documentElement.style.setProperty("--fs", v + "px"); try { localStorage.setItem("bible_fs", v); } catch (x) {}
+      const sv = $("sizeval"); if (sv) sv.textContent = v + " px";
+    });
 
     function marks() {
       document.querySelectorAll("#text .v").forEach((el) => {
@@ -396,7 +549,7 @@
       f.style.top = Math.round(top) + "px";
       f.style.left = Math.round(Math.min(Math.max(rd.left + 8, mid - w / 2), rd.right - w - 8)) + "px";
     }
-    let raf; const queue = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { placeFtb(false); progress(); }); };
+    let raf; const queue = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { placeFtb(false); progress(); savePos(); }); };
     addEventListener("scroll", queue, { passive: true }); addEventListener("resize", queue);
     function progress() { const d = document.documentElement, max = d.scrollHeight - innerHeight; $("progress").style.width = (max > 0 ? Math.min(100, (scrollY / max) * 100) : 0) + "%"; }
     $("ftb").addEventListener("click", (e) => {
@@ -553,12 +706,12 @@
     });
     $("helpov").addEventListener("click", (e) => { if (e.target === $("helpov") || e.target.closest("[data-closehelp]")) closeOv(); });
 
-    // ---------- Search and "go to"
-    let index = null, sTimer, act = -1;
+    // ---------- Search and "go to" (used by the overlay on desktop and the Search page on phones)
+    let index = null;
     const keyOf = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
-    async function buildIndex() {
+    async function buildIndex(out) {
       if (index) return index;
-      $("res").innerHTML = '<li class="rt">Loading the Bible…</li>';
+      out.innerHTML = '<li class="rt">Loading the Bible…</li>';
       await Promise.all(BOOKS.map((b) => loadBook(b.n)));
       index = []; BOOKS.forEach((b) => cache[b.n].chapters.forEach((vs, ci) => vs.forEach((t, vi) => {
         const text = t.replace(/^¶/, ""); index.push({ n: b.n, c: ci + 1, v: vi + 1, text, lc: text.toLowerCase().replace(/[\[\]]/g, "") });
@@ -570,48 +723,54 @@
       const k = keyOf(m[1]); if (!k) return [];
       return BOOKS.filter((b) => keyOf(b.name).startsWith(k)).slice(0, 5).map((b) => ({ n: b.n, c: Math.min(Number(m[2]) || 1, b.chapters), v: Number(m[3]) || 0 }));
     }
-    function setAct(i) {
-      const items = [...$("res").querySelectorAll("[data-go]")]; if (!items.length) { act = -1; return; }
-      act = (i + items.length) % items.length; items.forEach((el, k) => el.classList.toggle("act", k === act)); items[act].scrollIntoView({ block: "nearest" });
-    }
-    async function runSearch() {
-      const q = $("sq").value.trim(), out = $("res"); act = -1; if (!q) { out.innerHTML = ""; return; }
-      let html = parseRef(q).map((r) => `<li class="go" data-go="${r.n}.${r.c}.${r.v}"><div class="rr">Go to</div><div class="rt">${esc(refLabel(r.n, r.c, r.v ? [r.v] : []))}</div></li>`).join("");
-      if (q.length >= 3) {
-        const idx = await buildIndex(); if ($("sq").value.trim() !== q) return;
-        const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
-        const hits = idx.filter((r) => terms.every((t) => r.lc.includes(t))), shown = hits.slice(0, 100);
-        const re = new RegExp("(" + terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")", "gi");
-        html += shown.map((r) => `<li data-go="${r.n}.${r.c}.${r.v}"><div class="rr">${esc(refLabel(r.n, r.c, [r.v]))}</div><div class="rt">${esc(r.text).replace(/[\[\]]/g, "").replace(re, "<mark>$1</mark>")}</div></li>`).join("");
-        html += `<li class="rt" style="cursor:default">${hits.length} ${hits.length === 1 ? "verse" : "verses"}${hits.length > 100 ? " (showing 100)" : ""}</li>`;
+    function attachSearch(inp, out, hideWhileSearching) {
+      let timer, act = -1;
+      const setAct = (i) => {
+        const items = [...out.querySelectorAll("[data-go]")]; if (!items.length) { act = -1; return; }
+        act = (i + items.length) % items.length; items.forEach((el, k) => el.classList.toggle("act", k === act)); items[act].scrollIntoView({ block: "nearest" });
+      };
+      async function run() {
+        const q = inp.value.trim(); act = -1;
+        if (hideWhileSearching) hideWhileSearching.hidden = !!q;
+        if (!q) { out.innerHTML = ""; return; }
+        let html = parseRef(q).map((r) => `<li class="go" data-go="${r.n}.${r.c}.${r.v}"><div class="rr">Go to</div><div class="rt">${esc(refLabel(r.n, r.c, r.v ? [r.v] : []))}</div></li>`).join("");
+        if (q.length >= 3) {
+          const idx = await buildIndex(out); if (inp.value.trim() !== q) return;
+          const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+          const hits = idx.filter((r) => terms.every((t) => r.lc.includes(t))), shown = hits.slice(0, 100);
+          const re = new RegExp("(" + terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")", "gi");
+          html += shown.map((r) => `<li data-go="${r.n}.${r.c}.${r.v}"><div class="rr">${esc(refLabel(r.n, r.c, [r.v]))}</div><div class="rt">${esc(r.text).replace(/[\[\]]/g, "").replace(re, "<mark>$1</mark>")}</div></li>`).join("");
+          html += `<li class="rt" style="cursor:default">${hits.length} ${hits.length === 1 ? "verse" : "verses"}${hits.length > 100 ? " (showing 100)" : ""}</li>`;
+        }
+        out.innerHTML = html || '<li class="rt" style="cursor:default">No matches.</li>';
+        setAct(0);
       }
-      out.innerHTML = html || '<li class="rt" style="cursor:default">No matches.</li>';
-      setAct(0);
+      inp.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(run, 180); });
+      inp.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowDown") { e.preventDefault(); setAct(act + 1); }
+        else if (e.key === "ArrowUp") { e.preventDefault(); setAct(act - 1); }
+        else if (e.key === "Enter") { const items = out.querySelectorAll("[data-go]"); if (items[Math.max(act, 0)]) items[Math.max(act, 0)].click(); }
+      });
+      out.addEventListener("click", (e) => { const li = e.target.closest("[data-go]"); if (!li) return; const [n, c, v] = li.dataset.go.split(".").map(Number); inp.blur(); closeOv(); go(n, c, v); });
     }
+    attachSearch($("sq"), $("res"));
     function openSearch() { closeOv(); $("searchov").hidden = false; $("sq").focus(); $("sq").select(); }
     $("searchbtn").addEventListener("click", openSearch);
     $("searchclose").addEventListener("click", closeOv);
-    $("searchov").addEventListener("click", (e) => {
-      if (e.target === $("searchov")) { closeOv(); return; }
-      const li = e.target.closest("[data-go]"); if (!li) return;
-      const [n, c, v] = li.dataset.go.split(".").map(Number); closeOv(); go(n, c, v);
-    });
-    $("sq").addEventListener("input", () => { clearTimeout(sTimer); sTimer = setTimeout(runSearch, 180); });
-    $("sq").addEventListener("keydown", (e) => {
-      if (e.key === "ArrowDown") { e.preventDefault(); setAct(act + 1); }
-      else if (e.key === "ArrowUp") { e.preventDefault(); setAct(act - 1); }
-      else if (e.key === "Enter") { const items = $("res").querySelectorAll("[data-go]"); if (items[Math.max(act, 0)]) items[Math.max(act, 0)].click(); }
-    });
+    $("searchov").addEventListener("click", (e) => { if (e.target === $("searchov")) closeOv(); });
 
-    // ---------- Library: all my notes and highlights
+    // ---------- Library: all my notes and highlights (an overlay on desktop, the My notes page on phones)
     let lib = { tab: "notes", color: "all", q: "", notes: [], hls: [] };
-    async function openLibrary() {
-      closeOv(); $("libov").hidden = false; $("libsheet").innerHTML = '<h2>My notes and highlights</h2><p class="hint">Loading…</p>';
+    const libBox = () => (isMobile() ? $("viewNotes") : $("libsheet"));
+    const libTitle = () => (isMobile() ? "My notes" : "My notes and highlights");
+    async function openLibrary(inView) {
+      if (!inView) { closeOv(); $("libov").hidden = false; }
+      libBox().innerHTML = '<h2>' + libTitle() + '</h2><p class="hint">Loading…</p>';
       const [n, h] = await Promise.all([
         sb.from("bible_notes").select("*").order("book").order("chapter").order("verse_start"),
         sb.from("bible_highlights").select("*").order("book").order("chapter").order("verse")
       ]);
-      if (n.error || h.error) { $("libsheet").innerHTML = '<h2>My notes and highlights <button class="tb" data-closelib="1">Close</button></h2><p class="hint">' + esc(explain(n.error || h.error)) + "</p>"; return; }
+      if (n.error || h.error) { libBox().innerHTML = '<h2>' + libTitle() + ' <button class="tb" data-closelib="1">Close</button></h2><p class="hint">' + esc(explain(n.error || h.error)) + "</p>"; return; }
       lib.notes = n.data; lib.hls = h.data;
       await Promise.all([...new Set([...lib.notes, ...lib.hls].map((r) => r.book))].map(loadBook));
       renderLib();
@@ -627,19 +786,21 @@
         body = `<div class="tabs2">${["all", ...Object.keys(COLORS)].map((c) => `<button class="chip2" data-lcolor="${c}" aria-pressed="${lib.color === c}">${c === "all" ? "All colours" : `<span class="bar" style="background:${COLORS[c]}"></span>${c}`}</button>`).join("")}</div>`
           + (hs.length ? `<ul class="res">${hs.map((x) => `<li data-go="${x.book}.${x.chapter}.${x.verse}"><div class="rr"><span class="bar" style="background:${COLORS[x.color]}"></span>${esc(refLabel(x.book, x.chapter, [x.verse]))}</div><div class="rt">${esc(vtext(x.book, x.chapter, x.verse))}</div></li>`).join("")}</ul>` : `<p class="hint">${lib.hls.length ? "No highlights match." : "No highlights yet. Select a verse and pick a colour."}</p>`);
       }
-      $("libsheet").innerHTML = `<h2>My notes and highlights <button class="tb" data-closelib="1">Close</button></h2>
+      libBox().innerHTML = `<h2>${libTitle()} <button class="tb" data-closelib="1">Close</button></h2>
         <div class="tabs2"><button class="chip2" data-ltab="notes" aria-pressed="${lib.tab === "notes"}">Notes (${lib.notes.length})</button><button class="chip2" data-ltab="hl" aria-pressed="${lib.tab === "hl"}">Highlights (${lib.hls.length})</button></div>
         <input class="sinput" id="libq" type="search" placeholder="Filter" value="${esc(lib.q)}" aria-label="Filter" style="margin-bottom:6px">${body}`;
       const qi = $("libq"); if (qi) { qi.addEventListener("input", () => { lib.q = qi.value; const pos = qi.selectionStart; renderLib(); const n2 = $("libq"); n2.focus(); n2.setSelectionRange(pos, pos); }); }
     }
-    $("libbtn").addEventListener("click", openLibrary);
-    $("libov").addEventListener("click", (e) => {
+    function libClick(e) {
       const t = e.target;
       if (t === $("libov") || t.closest("[data-closelib]")) closeOv();
       else if (t.closest("[data-ltab]")) { lib.tab = t.closest("[data-ltab]").dataset.ltab; renderLib(); }
       else if (t.closest("[data-lcolor]")) { lib.color = t.closest("[data-lcolor]").dataset.lcolor; renderLib(); }
       else if (t.closest("[data-go]")) { const [n, c, v] = t.closest("[data-go]").dataset.go.split(".").map(Number); closeOv(); go(n, c, v); }
-    });
+    }
+    $("libbtn").addEventListener("click", () => openLibrary(false));
+    $("libov").addEventListener("click", libClick);
+    $("viewNotes").addEventListener("click", libClick);
   </script>
 </body>
 </html>
