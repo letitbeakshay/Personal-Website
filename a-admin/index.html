@@ -161,7 +161,8 @@
     window.__adminReady = true;
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm";
     const C = window.CONFIG;
-    const sb = createClient(C.SUPABASE_URL, C.SUPABASE_KEY);
+    // The login is kept on this device and refreshed automatically, with no time limit, until you press Sign out.
+    const sb = createClient(C.SUPABASE_URL, C.SUPABASE_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } });
     const $ = (id) => document.getElementById(id);
     const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     const KIND = { thought: "Thought", resource: "Resource", memory: "Memory", faith: "Faith note", experiment: "Experiment" };
@@ -195,8 +196,17 @@
       }
       $("pw").value = ""; say(msg, ""); showFor(data.session);
     });
-    $("signout").addEventListener("click", async () => { await sb.auth.signOut(); rows = []; showFor(null); });
-    sb.auth.getSession().then(({ data }) => showFor(data.session));
+    $("signout").addEventListener("click", async () => { await sb.auth.signOut({ scope: "local" }); rows = []; showFor(null); });
+    // A bad connection is retried, never treated as a sign-out.
+    (async () => {
+      for (let i = 0; i < 4; i++) {
+        const { data, error } = await sb.auth.getSession();
+        if (data && data.session) { try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {} showFor(data.session); return; }
+        if (!error || !/fetch|network|retry|timeout|offline/i.test((error.name || "") + " " + (error.message || ""))) { showFor(null); return; }
+        await new Promise((r) => setTimeout(r, 700 * (i + 1)));
+      }
+      say($("loginmsg"), "No connection right now. Your login is kept on this device; reload when you are online.", "err"); showFor(null);
+    })();
 
     // ---------- Tabs
     document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => {
